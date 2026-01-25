@@ -1,0 +1,81 @@
+Package: scClustEval
+Type: Package
+Title: Single Cell Clustering Evaluation and Optimization Framework
+Version: 1.0.0
+Date: 2026-01-26
+Authors@R: c(
+    person("Zaoqu", "Liu", 
+           email = "liuzaoqu@163.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-XXXX-XXXX")),
+    person("Chichau", "Miau", 
+           role = "ctb",
+           comment = "Original SCCAF Python implementation"))
+Description: A comprehensive framework for evaluating and optimizing single-cell 
+    RNA-seq clustering results using self-projection machine learning approaches. 
+
+    The package implements an iterative optimization strategy that merges poorly 
+    discriminated clusters based on confusion matrix analysis, achieving robust 
+    and reliable cell type identification. Features include multiple classifier 
+    support (logistic regression, random forest, SVM, etc.), ROC curve analysis, 
+    confusion matrix visualization, and seamless integration with Seurat objects.
+    This is an R implementation inspired by the SCCAF Python package.
+License: MIT + file LICENSE
+URL: https://github.com/Zaoqu-Liu/scClustEval
+BugReports: https://github.com/Zaoqu-Liu/scClustEval/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.0.0)
+Imports:
+    Seurat (>= 4.0.0),
+    SeuratObject,
+    Matrix,
+    Rcpp (>= 1.0.0),
+    glmnet,
+    caret,
+    igraph,
+    pROC,
+    ggplot2,
+    methods,
+    stats,
+    utils,
+    parallel,
+    future,
+    future.apply,
+    data.table,
+    dplyr,
+    tibble,
+    scales,
+    rlang
+Suggests:
+    randomForest,
+    ranger,
+    e1071,
+    xgboost,
+    ComplexHeatmap,
+    pheatmap,
+    ggalluvial,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    BiocStyle
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Collate:
+    'RcppExports.R'
+    'scClustEval-package.R'
+    'utils.R'
+    'classifiers.R'
+    'confusion_matrix.R'
+    'clustering.R'
+    'assessment.R'
+    'optimization.R'
+    'seurat_integration.R'
+    'visualization.R'
+    'zzz.R'

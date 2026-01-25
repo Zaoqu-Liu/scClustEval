@@ -1,0 +1,229 @@
+---
+title: "Introduction to scClustEval"
+author: "Zaoqu Liu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to scClustEval}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+**scClustEval** (Single Cell Clustering Evaluation) is an R package for evaluating and optimizing single-cell RNA-seq clustering results using self-projection machine learning approaches.
+
+The package implements an iterative optimization strategy that:
+
+1. Trains a classifier to distinguish between clusters
+2. Evaluates prediction accuracy via cross-validation
+3. Identifies cluster pairs that are difficult to discriminate
+4. Merges confused clusters iteratively until target accuracy is reached
+
+## Installation
+
+```{r install, eval=FALSE}
+# From GitHub
+devtools::install_github("Zaoqu-Liu/scClustEval")
+```
+
+## Quick Start
+
+### Loading the package
+
+```{r load, message=FALSE, warning=FALSE}
+library(scClustEval)
+```
+
+### Basic Assessment with Matrix Input
+
+```{r basic_assessment, eval=FALSE}
+# Create example data
+set.seed(42)
+n_cells <- 500
+n_features <- 100
+n_clusters <- 5
+
+# Generate expression matrix with cluster structure
+X <- matrix(0, nrow = n_cells, ncol = n_features)
+labels <- character(n_cells)
+
+for (i in 1:n_clusters) {
+  idx <- ((i-1) * 100 + 1):(i * 100)
+  X[idx, ] <- matrix(rnorm(100 * n_features, mean = i), nrow = 100)
+  labels[idx] <- paste0("Cluster_", i)
+}
+
+# Run assessment
+result <- sc_assessment(
+  X = X,
+  labels = labels,
+  classifier = "LR",
+  n_per_class = 50,
+  cv = 5
+)
+
+# Print result
+print(result)
+```
+
+### With Seurat Objects
+
+```{r seurat_example, eval=FALSE}
+library(Seurat)
+
+# Load your Seurat object
+seurat_obj <- readRDS("your_data.rds")
+
+# Run assessment on existing clustering
+result <- RunAssessment(
+  seurat_obj,
+  cluster_col = "seurat_clusters",
+  use = "pca",
+  dims = 1:30
+)
+
+# View results
+print(result)
+
+# Plot ROC curves
+plot_roc(result)
+```
+
+## Clustering Optimization
+
+### The Optimization Process
+
+The optimization process works as follows:
+
+1. Start with an over-clustered result (high resolution)
+2. Assess the clustering using self-projection
+3. Build a confusion matrix to identify confused cluster pairs
+4. Merge clusters that cannot be well discriminated
+5. Repeat until target accuracy is reached
+
+```{r optimization, eval=FALSE}
+# Start with over-clustering
+seurat_obj <- FindClusters(seurat_obj, resolution = 2.0)
+
+# Run optimization
+seurat_obj <- RunOptimization(
+  seurat_obj,
+  cluster_col = "seurat_clusters",
+  min_accuracy = 0.9,
+  result_col = "optimized_clusters"
+)
+
+# Compare before and after
+DimPlot(seurat_obj, group.by = c("seurat_clusters", "optimized_clusters"))
+```
+
+## Visualization Functions
+
+### ROC Curves
+
+```{r roc, eval=FALSE}
+# Plot ROC and Precision-Recall curves
+plot_roc(result, plot_type = "both")
+
+# ROC only
+plot_roc(result, plot_type = "roc")
+```
+
+### Confusion Matrix Heatmap
+
+```{r confusion, eval=FALSE}
+# Raw confusion matrix
+plot_confusion_heatmap(result, normalized = "raw")
+
+# R1-normalized (used for merging decisions)
+plot_confusion_heatmap(result, normalized = "R1")
+```
+
+### Optimization History
+
+```{r history, eval=FALSE}
+# Run optimization with matrix input
+optim_result <- sc_optimize_all(
+  X = X,
+  labels = initial_labels,
+  min_accuracy = 0.9
+)
+
+# Plot optimization progress
+plot_optimization_history(optim_result)
+```
+
+## Classifier Options
+
+The package supports multiple classifiers:
+
+| Classifier | Code | Description |
+|------------|------|-------------|
+| Logistic Regression | `"LR"` | L1/L2 regularized (default) |
+| Random Forest | `"RF"` | Using randomForest package |
+| Ranger | `"RANGER"` | Fast random forest |
+| SVM | `"SVM"` | Support Vector Machine |
+| Naive Bayes | `"NB"` | Gaussian Naive Bayes |
+| Decision Tree | `"DT"` | Using rpart |
+| XGBoost | `"XGB"` | Gradient boosting |
+
+```{r classifiers, eval=FALSE}
+# Using different classifiers
+result_lr <- sc_assessment(X, labels, classifier = "LR")
+result_rf <- sc_assessment(X, labels, classifier = "RF")
+result_svm <- sc_assessment(X, labels, classifier = "SVM")
+```
+
+## Advanced Usage
+
+### Using Constraints
+
+You can constrain the optimization process using an under-clustering as a boundary:
+
+```{r constraints, eval=FALSE}
+# Create low and high resolution clusterings
+seurat_obj <- FindClusters(seurat_obj, resolution = 0.2, key_added = "low_res")
+seurat_obj <- FindClusters(seurat_obj, resolution = 2.0, key_added = "high_res")
+
+# Optimize with constraint
+seurat_obj <- RunOptimization(
+  seurat_obj,
+  cluster_col = "high_res",
+  under_cluster_col = "low_res",  # Constraint
+  min_accuracy = 0.95
+)
+```
+
+### Parallel Processing
+
+```{r parallel, eval=FALSE}
+# Assessment uses parallel processing automatically
+# Control with n_cores parameter
+result <- sc_assessment(
+  X, labels,
+  n_cores = 4  # Use 4 cores
+)
+```
+
+## Session Info
+
+```{r session}
+sessionInfo()
+```
+
+## References
+
+This package is an R implementation inspired by the SCCAF Python package:
+
+- Miao, Z., et al. (2020). Putative cell type discovery from single-cell gene expression data. *Nature Methods*.
+- SCCAF GitHub: https://github.com/SCCAF/sccaf

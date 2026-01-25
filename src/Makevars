@@ -1,0 +1,18 @@
+# Makevars for scClustEval
+# Author: Zaoqu Liu
+# Note: No OpenMP flags to avoid conflicts
+
+# Use C++11 standard
+CXX_STD = CXX11
+
+# Compiler flags
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+# Disable OpenMP explicitly to avoid conflicts
+# If you need OpenMP in the future, uncomment the following:
+# PKG_CXXFLAGS += -fopenmp
+# PKG_LIBS += -fopenmp
+
+# Optimization flags
+PKG_CXXFLAGS += -O3

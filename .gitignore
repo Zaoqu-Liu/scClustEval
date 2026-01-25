@@ -1,0 +1,40 @@
+# R specific
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Compiled files
+*.o
+*.so
+*.dll
+src/*.o
+src/*.so
+src/*.dll
+
+# Package build
+*.tar.gz
+*.zip
+scClustEval.Rcheck/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+pkgdown/
+
+# Test artifacts
+tests/testthat/_snaps/
+
+# Misc
+*.log
+*.bak
