@@ -17,8 +17,12 @@ NULL
 #' @param n_iter Number of sampling iterations for confusion matrix (default: 3)
 #' @param r1_cutoff Threshold for R1-normalized confusion (default: 0.1)
 #' @param r2_cutoff Threshold for R2-normalized confusion (default: 0.05)
+#' @param r1_mode R1 normalization mode: "1" or "2" (default: "1", as in SCCAF)
 #' @param use_r1_only Use only R1 normalization for merging decisions
 #' @param use_r2_only Use only R2 normalization for merging decisions
+#' @param use_distance Use distance matrix in merging decision (default: FALSE)
+#' @param dist_cutoff Distance cutoff for merging (default: 8.0)
+#' @param use_projection Use self-projection labels for subsequent iterations (default: FALSE)
 #' @param connection_matrix Optional connection matrix for constrained merging
 #' @param resolution Louvain resolution for merging (default: 1.0)
 #' @param seed Random seed
@@ -40,6 +44,7 @@ NULL
 #'   \item{n_clusters_after}{Number of clusters after merging}
 #'   \item{converged}{Whether optimization has converged (no merging possible)}
 #'   \item{assessments}{List of assessment results from iterations}
+#'   \item{self_projection_labels}{Self-projection predicted labels (if use_projection=TRUE)}
 #' }
 #'
 #' @export
@@ -54,8 +59,12 @@ sc_optimize <- function(X,
                         n_iter = 3,
                         r1_cutoff = 0.1,
                         r2_cutoff = 0.05,
+                        r1_mode = "1",
                         use_r1_only = FALSE,
                         use_r2_only = FALSE,
+                        use_distance = FALSE,
+                        dist_cutoff = 8.0,
+                        use_projection = FALSE,
                         connection_matrix = NULL,
                         resolution = 1.0,
                         seed = 1,
@@ -78,6 +87,10 @@ sc_optimize <- function(X,
     cmatrices <- list()
     assessments <- list()
     accuracies <- numeric(n_iter)
+    
+    # Track labels for use_projection
+    current_iter_labels <- labels
+    self_proj_labels <- NULL
 
     for (i in seq_len(n_iter)) {
         iter_seed <- if (!is.null(seed)) seed + i - 1 else NULL
@@ -86,10 +99,12 @@ sc_optimize <- function(X,
             .log_message("Running assessment iterations...")
         }
 
-        # Run assessment
+        # Run assessment - use projection labels for iterations after first if use_projection=TRUE
+        train_labels <- if (i == 1 || !use_projection) labels else current_iter_labels
+        
         result <- self_projection(
             X = X,
-            labels = labels,
+            labels = train_labels,
             classifier = classifier,
             penalty = penalty,
             lambda = lambda,
@@ -103,9 +118,22 @@ sc_optimize <- function(X,
 
         assessments[[i]] <- result
         accuracies[i] <- result$accuracy
-        r1_matrices[[i]] <- result$r1_normalized
+        
+        # Compute R1 with specified mode
+        r1_matrices[[i]] <- normalize_confmat_r1(result$confusion_matrix, mode = r1_mode)
         r2_matrices[[i]] <- result$r2_normalized
         cmatrices[[i]] <- result$confusion_matrix
+        
+        # Store self-projection labels for use_projection
+        if (i == 1) {
+            # Get full predictions on all data for use_projection
+            clf <- result$classifier
+            all_pred <- clf$predict(X)
+            self_proj_labels <- all_pred
+            if (use_projection) {
+                current_iter_labels <- as.factor(all_pred)
+            }
+        }
     }
 
     # Aggregate confusion matrices (take minimum across iterations)
@@ -123,19 +151,34 @@ sc_optimize <- function(X,
         .log_message(sprintf("Aggregated Max R1: %.4f, Max R2: %.4f", max_r1, max_r2))
     }
 
+    # Compute distance matrix if needed
+    dist_mat <- NULL
+    if (use_distance) {
+        if (verbose) .log_message("Computing distance matrix...")
+        dist_mat <- get_distance_matrix(X, labels, labels = classes, method = "euclidean")
+        # Normalize: clusters are "close" if distance < cutoff
+        dist_close <- dist_mat < dist_cutoff
+    }
+
     # Determine which clusters to merge
     if (use_r1_only) {
         merge_mat <- r1_mat > r1_cutoff
     } else if (use_r2_only) {
         merge_mat <- r2_mat > r2_cutoff
     } else {
-        # Use both criteria (OR logic)
+        # Use both R1 and R2 criteria (OR logic)
         if (!is.null(connection_matrix)) {
             # Constrained by connection matrix (AND logic)
             r1_exceed <- r1_mat > r1_cutoff
             merge_mat <- r1_exceed & (connection_matrix > 0)
         } else {
             merge_mat <- (r1_mat > r1_cutoff) | (r2_mat > r2_cutoff)
+        }
+        
+        # Additionally constrain by distance if use_distance=TRUE
+        if (use_distance) {
+            # Only merge if confused AND close in distance
+            merge_mat <- merge_mat & dist_close
         }
     }
 
@@ -163,9 +206,10 @@ sc_optimize <- function(X,
         }
     }
 
-    # Create new labels
+    # Create new labels - use projection labels if use_projection=TRUE
+    source_labels <- if (use_projection && !is.null(self_proj_labels)) self_proj_labels else labels
     group_map <- setNames(as.character(groups), classes)
-    new_labels <- group_map[as.character(labels)]
+    new_labels <- group_map[as.character(source_labels)]
     new_labels <- factor(new_labels)
 
     # Results
@@ -180,10 +224,12 @@ sc_optimize <- function(X,
         r1_matrix = r1_mat,
         r2_matrix = r2_mat,
         confusion_matrix = cmat_agg,
+        distance_matrix = dist_mat,
         n_clusters_before = n_clusters_before,
         n_clusters_after = n_new_clusters,
         converged = converged,
-        assessments = assessments
+        assessments = assessments,
+        self_projection_labels = self_proj_labels
     )
 }
 
@@ -211,8 +257,12 @@ SCCAF_optimize <- sc_optimize
 #' @param r2_cutoff Initial R2 cutoff (default: 0.05)
 #' @param r1_step Step to reduce R1 cutoff each outer iteration (default: 0.01)
 #' @param r2_step Step to reduce R2 cutoff each outer iteration (default: 0.001)
+#' @param r1_mode R1 normalization mode: "1" or "2" (default: "1")
 #' @param use_r1_only Use only R1 for merging
 #' @param use_r2_only Use only R2 for merging
+#' @param use_distance Use distance matrix in merging decisions (default: FALSE)
+#' @param dist_cutoff Distance cutoff for merging (default: 8.0)
+#' @param use_projection Use self-projection labels for subsequent iterations (default: FALSE)
 #' @param under_cluster_labels Optional: under-clustering labels as constraint
 #' @param min_outer_iter Minimum outer iterations before allowing convergence
 #' @param seed Random seed
@@ -275,8 +325,12 @@ sc_optimize_all <- function(X,
                             r2_cutoff = 0.05,
                             r1_step = 0.01,
                             r2_step = 0.001,
+                            r1_mode = "1",
                             use_r1_only = FALSE,
                             use_r2_only = FALSE,
+                            use_distance = FALSE,
+                            dist_cutoff = 8.0,
+                            use_projection = FALSE,
                             under_cluster_labels = NULL,
                             min_outer_iter = 3,
                             seed = 1,
@@ -343,8 +397,12 @@ sc_optimize_all <- function(X,
                 n_iter = n_iter,
                 r1_cutoff = r1_cutoff,
                 r2_cutoff = r2_cutoff,
+                r1_mode = r1_mode,
                 use_r1_only = use_r1_only,
                 use_r2_only = use_r2_only,
+                use_distance = use_distance,
+                dist_cutoff = dist_cutoff,
+                use_projection = use_projection,
                 connection_matrix = conn_mat,
                 seed = if (!is.null(seed)) seed + total_rounds else NULL,
                 n_cores = n_cores,

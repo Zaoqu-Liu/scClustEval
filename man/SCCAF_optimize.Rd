@@ -16,8 +16,12 @@ SCCAF_optimize(
   n_iter = 3,
   r1_cutoff = 0.1,
   r2_cutoff = 0.05,
+  r1_mode = "1",
   use_r1_only = FALSE,
   use_r2_only = FALSE,
+  use_distance = FALSE,
+  dist_cutoff = 8,
+  use_projection = FALSE,
   connection_matrix = NULL,
   resolution = 1,
   seed = 1,
@@ -48,9 +52,17 @@ SCCAF_optimize(
 
 \item{r2_cutoff}{Threshold for R2-normalized confusion (default: 0.05)}
 
+\item{r1_mode}{R1 normalization mode: "1" or "2" (default: "1", as in SCCAF)}
+
 \item{use_r1_only}{Use only R1 normalization for merging decisions}
 
 \item{use_r2_only}{Use only R2 normalization for merging decisions}
+
+\item{use_distance}{Use distance matrix in merging decision (default: FALSE)}
+
+\item{dist_cutoff}{Distance cutoff for merging (default: 8.0)}
+
+\item{use_projection}{Use self-projection labels for subsequent iterations (default: FALSE)}
 
 \item{connection_matrix}{Optional connection matrix for constrained merging}
 

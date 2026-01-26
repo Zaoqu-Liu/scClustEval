@@ -20,8 +20,12 @@ SCCAF_optimize_all(
   r2_cutoff = 0.05,
   r1_step = 0.01,
   r2_step = 0.001,
+  r1_mode = "1",
   use_r1_only = FALSE,
   use_r2_only = FALSE,
+  use_distance = FALSE,
+  dist_cutoff = 8,
+  use_projection = FALSE,
   under_cluster_labels = NULL,
   min_outer_iter = 3,
   seed = 1,
@@ -60,9 +64,17 @@ SCCAF_optimize_all(
 
 \item{r2_step}{Step to reduce R2 cutoff each outer iteration (default: 0.001)}
 
+\item{r1_mode}{R1 normalization mode: "1" or "2" (default: "1")}
+
 \item{use_r1_only}{Use only R1 for merging}
 
 \item{use_r2_only}{Use only R2 for merging}
+
+\item{use_distance}{Use distance matrix in merging decisions (default: FALSE)}
+
+\item{dist_cutoff}{Distance cutoff for merging (default: 8.0)}
+
+\item{use_projection}{Use self-projection labels for subsequent iterations (default: FALSE)}
 
 \item{under_cluster_labels}{Optional: under-clustering labels as constraint}
 
