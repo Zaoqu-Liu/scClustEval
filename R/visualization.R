@@ -650,7 +650,8 @@ plot_cluster_links <- function(embeddings,
                 xend = .data$xend, yend = .data$yend),
             linewidth = lines_df$weight * line_scale,
             color = line_color,
-            alpha = 0.7
+            alpha = 0.7,
+            inherit.aes = FALSE
         )
     }
     
@@ -660,7 +661,8 @@ plot_cluster_links <- function(embeddings,
         aes(x = .data$Dim1, y = .data$Dim2),
         color = point_color,
         size = point_size,
-        alpha = point_alpha
+        alpha = point_alpha,
+        inherit.aes = FALSE
     )
     
     # Add labels
@@ -669,7 +671,8 @@ plot_cluster_links <- function(embeddings,
             data = centroids,
             aes(x = .data$Dim1, y = .data$Dim2, label = .data$cluster),
             size = label_size,
-            fontface = "bold"
+            fontface = "bold",
+            inherit.aes = FALSE
         )
     }
     
@@ -735,7 +738,8 @@ plot_cluster_centers <- function(embeddings,
         aes(x = .data$Dim1, y = .data$Dim2),
         color = point_color,
         size = point_size,
-        alpha = point_alpha
+        alpha = point_alpha,
+        inherit.aes = FALSE
     )
     
     if (is.null(add_to_plot)) {

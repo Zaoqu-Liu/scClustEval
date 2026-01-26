@@ -113,3 +113,98 @@ test_that("print and summary methods work", {
     expect_output(print(result))
     expect_output(summary(result))
 })
+
+test_that("plot_cluster_links returns ggplot object", {
+    skip_if_not_installed("ggplot2")
+
+    set.seed(42)
+    n_per_class <- 30
+    n_clusters <- 3
+
+    # Create embeddings with distinct cluster centers
+    embeddings <- matrix(rnorm(n_per_class * n_clusters * 2), ncol = 2)
+    labels <- factor(rep(1:n_clusters, each = n_per_class))
+
+    # Separate cluster centers
+    for (i in 1:n_clusters) {
+        idx <- which(labels == i)
+        embeddings[idx, 1] <- embeddings[idx, 1] + (i - 1) * 5
+    }
+
+    # Create a fake confusion matrix
+    cmat <- matrix(c(0, 0.3, 0.1, 0.3, 0, 0.2, 0.1, 0.2, 0), nrow = 3)
+    rownames(cmat) <- colnames(cmat) <- levels(labels)
+
+    p <- plot_cluster_links(embeddings, labels, cmat, threshold = 0.1)
+    expect_s3_class(p, "gg")
+})
+
+test_that("plot_cluster_centers returns ggplot object", {
+    skip_if_not_installed("ggplot2")
+
+    set.seed(42)
+    n_per_class <- 30
+    n_clusters <- 3
+
+    embeddings <- matrix(rnorm(n_per_class * n_clusters * 2), ncol = 2)
+    labels <- factor(rep(1:n_clusters, each = n_per_class))
+
+    p <- plot_cluster_centers(embeddings, labels)
+    expect_s3_class(p, "gg")
+})
+
+test_that("plot_embedding_with_links returns ggplot object", {
+    skip_if_not_installed("glmnet")
+    skip_if_not_installed("ggplot2")
+
+    set.seed(42)
+    n_per_class <- 30
+    n_clusters <- 3
+
+    # Create separable data
+    X <- rbind(
+        matrix(rnorm(n_per_class * 10, mean = 0), nrow = n_per_class),
+        matrix(rnorm(n_per_class * 10, mean = 3), nrow = n_per_class),
+        matrix(rnorm(n_per_class * 10, mean = 6), nrow = n_per_class)
+    )
+    labels <- factor(rep(1:n_clusters, each = n_per_class))
+
+    # Create embeddings
+    embeddings <- matrix(rnorm(n_per_class * n_clusters * 2), ncol = 2)
+    for (i in 1:n_clusters) {
+        idx <- which(labels == i)
+        embeddings[idx, 1] <- embeddings[idx, 1] + (i - 1) * 5
+    }
+
+    # Run assessment
+    result <- sc_assessment(X, labels, classifier = "LR", cv = 0, verbose = FALSE)
+
+    # Test combined plot
+    p <- plot_embedding_with_links(
+        embeddings, labels, result$r1_normalized,
+        threshold = 0.01
+    )
+    expect_s3_class(p, "gg")
+})
+
+test_that("plot_cluster_links works with add_to_plot parameter", {
+    skip_if_not_installed("ggplot2")
+
+    set.seed(42)
+    n_per_class <- 30
+    n_clusters <- 3
+
+    embeddings <- matrix(rnorm(n_per_class * n_clusters * 2), ncol = 2)
+    labels <- factor(rep(1:n_clusters, each = n_per_class))
+
+    cmat <- matrix(c(0, 0.3, 0.1, 0.3, 0, 0.2, 0.1, 0.2, 0), nrow = 3)
+    rownames(cmat) <- colnames(cmat) <- levels(labels)
+
+    # Create base plot
+    base_plot <- ggplot2::ggplot() + ggplot2::theme_minimal()
+
+    # Add links to existing plot
+    p <- plot_cluster_links(embeddings, labels, cmat,
+                            threshold = 0.05, add_to_plot = base_plot)
+    expect_s3_class(p, "gg")
+})
