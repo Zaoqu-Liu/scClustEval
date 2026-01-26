@@ -6,11 +6,13 @@ Date: 2026-01-26
 Authors@R: c(
     person("Zaoqu", "Liu", 
            email = "liuzaoqu@163.com", 
-           role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-XXXX-XXXX")),
-    person("Chichau", "Miau", 
+           role = c("aut", "cre")),
+    person("Chichau", "Miao", 
            role = "ctb",
            comment = "Original SCCAF Python implementation"))
+Author: Zaoqu Liu [aut, cre],
+    Chichau Miao [ctb] (Original SCCAF Python implementation)
+Maintainer: Zaoqu Liu <liuzaoqu@163.com>
 Description: A comprehensive framework for evaluating and optimizing single-cell
     RNA-seq clustering results using self-projection machine learning approaches.
     The package implements an iterative optimization strategy that merges poorly
@@ -23,7 +25,6 @@ License: MIT + file LICENSE
 URL: https://github.com/Zaoqu-Liu/scClustEval
 BugReports: https://github.com/Zaoqu-Liu/scClustEval/issues
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends:

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Zaoqu Liu" />
+
+<meta name="date" content="2026-01-26" />
+
+<title>Algorithm Principles and Mathematical Foundation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Algorithm Principles and Mathematical
+Foundation</h1>
+<h4 class="author">Zaoqu Liu</h4>
+<h4 class="date">2026-01-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview" id="toc-overview">Overview</a></li>
+<li><a href="#the-challenge-of-cell-clustering-evaluation" id="toc-the-challenge-of-cell-clustering-evaluation">The Challenge of
+Cell Clustering Evaluation</a></li>
+<li><a href="#self-projection-framework" id="toc-self-projection-framework">Self-Projection Framework</a>
+<ul>
+<li><a href="#core-concept" id="toc-core-concept">Core Concept</a></li>
+<li><a href="#algorithm-steps" id="toc-algorithm-steps">Algorithm
+Steps</a></li>
+<li><a href="#mathematical-formulation" id="toc-mathematical-formulation">Mathematical Formulation</a></li>
+</ul></li>
+<li><a href="#confusion-matrix-normalization" id="toc-confusion-matrix-normalization">Confusion Matrix
+Normalization</a>
+<ul>
+<li><a href="#r1-normalization" id="toc-r1-normalization">R1
+Normalization</a></li>
+<li><a href="#r2-normalization" id="toc-r2-normalization">R2
+Normalization</a></li>
+</ul></li>
+<li><a href="#visualization-of-confusion-analysis" id="toc-visualization-of-confusion-analysis">Visualization of Confusion
+Analysis</a></li>
+<li><a href="#cluster-merging-strategy" id="toc-cluster-merging-strategy">Cluster Merging Strategy</a>
+<ul>
+<li><a href="#graph-based-approach" id="toc-graph-based-approach">Graph-Based Approach</a></li>
+<li><a href="#community-detection" id="toc-community-detection">Community Detection</a></li>
+</ul></li>
+<li><a href="#iterative-optimization" id="toc-iterative-optimization">Iterative Optimization</a>
+<ul>
+<li><a href="#convergence-criteria" id="toc-convergence-criteria">Convergence Criteria</a></li>
+<li><a href="#cutoff-adaptation" id="toc-cutoff-adaptation">Cutoff
+Adaptation</a></li>
+</ul></li>
+<li><a href="#classifier-comparison" id="toc-classifier-comparison">Classifier Comparison</a>
+<ul>
+<li><a href="#supported-algorithms" id="toc-supported-algorithms">Supported Algorithms</a></li>
+<li><a href="#mathematical-details" id="toc-mathematical-details">Mathematical Details</a></li>
+</ul></li>
+<li><a href="#performance-metrics" id="toc-performance-metrics">Performance Metrics</a>
+<ul>
+<li><a href="#per-cluster-accuracy" id="toc-per-cluster-accuracy">Per-Cluster Accuracy</a></li>
+<li><a href="#overall-accuracy" id="toc-overall-accuracy">Overall
+Accuracy</a></li>
+</ul></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>scClustEval</strong> implements a self-projection framework
+for evaluating and optimizing single-cell RNA-seq clustering. This
+vignette provides a comprehensive explanation of the underlying
+algorithms and mathematical foundations.</p>
+</div>
+<div id="the-challenge-of-cell-clustering-evaluation" class="section level2">
+<h2>The Challenge of Cell Clustering Evaluation</h2>
+<p>In single-cell RNA-seq analysis, clustering algorithms aim to group
+cells with similar transcriptomic profiles. However, several challenges
+arise:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Parameter Sensitivity</strong>: Clustering results are
+highly sensitive to resolution parameters</li>
+<li><strong>Over-clustering</strong>: High resolution may split
+biologically homogeneous populations</li>
+<li><strong>Under-clustering</strong>: Low resolution may merge distinct
+cell types</li>
+<li><strong>Lack of Ground Truth</strong>: True cell type labels are
+rarely available</li>
+</ol>
+<p><strong>scClustEval</strong> addresses these challenges through a
+quantitative, data-driven approach.</p>
+</div>
+<div id="self-projection-framework" class="section level2">
+<h2>Self-Projection Framework</h2>
+<div id="core-concept" class="section level3">
+<h3>Core Concept</h3>
+<p>The self-projection method treats cluster evaluation as a
+classification problem:</p>
+<blockquote>
+<p><em>“If a clustering is biologically meaningful, a classifier should
+be able to accurately distinguish cells from different clusters based on
+their gene expression profiles.”</em></p>
+</blockquote>
+</div>
+<div id="algorithm-steps" class="section level3">
+<h3>Algorithm Steps</h3>
+</div>
+<div id="mathematical-formulation" class="section level3">
+<h3>Mathematical Formulation</h3>
+<div id="data-partitioning" class="section level4">
+<h4>1. Data Partitioning</h4>
+<p>Given expression matrix <span class="math inline">\(\mathbf{X} \in
+\mathbb{R}^{n \times p}\)</span> with <span class="math inline">\(n\)</span> cells and <span class="math inline">\(p\)</span> features, and cluster labels <span class="math inline">\(\mathbf{y} \in \{1, ..., K\}^n\)</span>:</p>
+<p><span class="math display">\[
+\mathbf{X} = \mathbf{X}_{train} \cup \mathbf{X}_{test}
+\]</span></p>
+<p>Stratified sampling ensures each cluster <span class="math inline">\(k\)</span> contributes proportionally:</p>
+<p><span class="math display">\[
+\frac{n_k^{train}}{n^{train}} \approx \frac{n_k^{test}}{n^{test}}
+\approx \frac{n_k}{n}
+\]</span></p>
+</div>
+<div id="classification-model" class="section level4">
+<h4>2. Classification Model</h4>
+<p>We train a multi-class classifier <span class="math inline">\(f:
+\mathbb{R}^p \rightarrow \{1, ..., K\}\)</span> that predicts cluster
+membership. The default is L1-regularized logistic regression:</p>
+<p><span class="math display">\[
+\min_{\boldsymbol{\beta}} -\sum_{i=1}^{n_{train}} \log P(y_i |
+\mathbf{x}_i, \boldsymbol{\beta}) + \lambda ||\boldsymbol{\beta}||_1
+\]</span></p>
+</div>
+<div id="confusion-matrix" class="section level4">
+<h4>3. Confusion Matrix</h4>
+<p>The confusion matrix <span class="math inline">\(\mathbf{C} \in
+\mathbb{R}^{K \times K}\)</span> is computed on the test set:</p>
+<p><span class="math display">\[
+C_{ij} = |\{x : y_{true}(x) = i \land y_{pred}(x) = j\}|
+\]</span></p>
+<p>Where: - <span class="math inline">\(C_{ii}\)</span> (diagonal):
+correctly classified cells from cluster <span class="math inline">\(i\)</span> - <span class="math inline">\(C_{ij}\)</span> (off-diagonal): cells from cluster
+<span class="math inline">\(i\)</span> misclassified as cluster <span class="math inline">\(j\)</span></p>
+</div>
+</div>
+</div>
+<div id="confusion-matrix-normalization" class="section level2">
+<h2>Confusion Matrix Normalization</h2>
+<div id="r1-normalization" class="section level3">
+<h3>R1 Normalization</h3>
+<p>R1 normalization measures <strong>pairwise confusion rate</strong>
+relative to correct classifications:</p>
+<p><span class="math display">\[
+R1(i, j) = \max\left(\frac{C_{ij}}{C_{jj}}, \frac{C_{ji}}{C_{ii}}\right)
+\]</span></p>
+<p><strong>Interpretation:</strong> - <span class="math inline">\(R1 =
+0\)</span>: Perfect discrimination - <span class="math inline">\(R1 &gt;
+1\)</span>: More misclassifications than correct classifications (severe
+confusion) - High R1 indicates clusters should potentially be merged</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(scClustEval)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Example confusion matrix</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>cmat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="dv">90</span>, <span class="dv">5</span>, <span class="dv">3</span>,    <span class="co"># Cluster A: 90 correct, 5 misclassified as B, 3 as C</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="dv">8</span>, <span class="dv">85</span>, <span class="dv">7</span>,   <span class="co"># Cluster B: 8 misclassified as A, 85 correct, 7 as C  </span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">12</span>, <span class="dv">86</span>   <span class="co"># Cluster C: 2 as A, 12 as B, 86 correct</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">rownames</span>(cmat) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(cmat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># Compute R1 normalization</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>r1_mat <span class="ot">&lt;-</span> <span class="fu">normalize_confmat_r1</span>(cmat)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(r1_mat, <span class="dv">3</span>))</span></code></pre></div>
+</div>
+<div id="r2-normalization" class="section level3">
+<h3>R2 Normalization</h3>
+<p>R2 normalization measures <strong>overall confusion
+proportion</strong> in the dataset:</p>
+<p><span class="math display">\[
+R2(i, j) = \frac{C_{ij} + C_{ji}}{N_{total}}
+\]</span></p>
+<p>Where <span class="math inline">\(N_{total} = \sum_{i,j}
+C_{ij}\)</span>.</p>
+<p><strong>Interpretation:</strong> - R2 represents the fraction of
+total cells confused between clusters <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> - Values range from 0 to 1 - Useful for
+identifying globally important confusions</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Compute R2 normalization</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>r2_mat <span class="ot">&lt;-</span> <span class="fu">normalize_confmat_r2</span>(cmat)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(r2_mat, <span class="dv">4</span>))</span></code></pre></div>
+</div>
+</div>
+<div id="visualization-of-confusion-analysis" class="section level2">
+<h2>Visualization of Confusion Analysis</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Create data for visualization</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>df_r1 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.table</span>(r1_mat))</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">colnames</span>(df_r1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;True&quot;</span>, <span class="st">&quot;Predicted&quot;</span>, <span class="st">&quot;R1&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>df_r2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.table</span>(r2_mat))</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="fu">colnames</span>(df_r2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;True&quot;</span>, <span class="st">&quot;Predicted&quot;</span>, <span class="st">&quot;R2&quot;</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_r1, <span class="fu">aes</span>(<span class="at">x =</span> Predicted, <span class="at">y =</span> True, <span class="at">fill =</span> R1)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f&quot;</span>, R1)), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;gray90&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#d62728&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;R1 Normalization&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Pairwise confusion rate&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_r2, <span class="fu">aes</span>(<span class="at">x =</span> Predicted, <span class="at">y =</span> True, <span class="at">fill =</span> R2)) <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.3f&quot;</span>, R2)), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;gray90&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#1f77b4&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;R2 Normalization&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Global confusion proportion&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="cluster-merging-strategy" class="section level2">
+<h2>Cluster Merging Strategy</h2>
+<div id="graph-based-approach" class="section level3">
+<h3>Graph-Based Approach</h3>
+<p>Clusters exceeding confusion thresholds are connected in an adjacency
+graph:</p>
+<p><span class="math display">\[
+A_{ij} = \begin{cases}
+1 &amp; \text{if } R1(i,j) &gt; \theta_{R1} \text{ or } R2(i,j) &gt;
+\theta_{R2} \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+</div>
+<div id="community-detection" class="section level3">
+<h3>Community Detection</h3>
+<p>The Louvain algorithm identifies communities (groups of confused
+clusters) by maximizing modularity:</p>
+<p><span class="math display">\[
+Q = \frac{1}{2m}\sum_{ij}\left[A_{ij} - \frac{k_i
+k_j}{2m}\right]\delta(c_i, c_j)
+\]</span></p>
+<p>Where: - <span class="math inline">\(m\)</span> = total number of
+edges - <span class="math inline">\(k_i\)</span> = degree of node <span class="math inline">\(i\)</span> - <span class="math inline">\(c_i\)</span> = community assignment of node <span class="math inline">\(i\)</span> - <span class="math inline">\(\delta\)</span> = Kronecker delta</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Demonstrate adjacency matrix clustering</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>adj <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="dv">0</span>, <span class="fl">0.3</span>, <span class="fl">0.02</span>, <span class="fl">0.01</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fl">0.3</span>, <span class="dv">0</span>, <span class="fl">0.25</span>, <span class="fl">0.02</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fl">0.02</span>, <span class="fl">0.25</span>, <span class="dv">0</span>, <span class="fl">0.01</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fl">0.01</span>, <span class="fl">0.02</span>, <span class="fl">0.01</span>, <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>), <span class="at">nrow =</span> <span class="dv">4</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">rownames</span>(adj) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(adj) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;C1&quot;</span>, <span class="st">&quot;C2&quot;</span>, <span class="st">&quot;C3&quot;</span>, <span class="st">&quot;C4&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Cluster at threshold 0.1</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cluster_adjacency_matrix</span>(adj, <span class="at">cutoff =</span> <span class="fl">0.1</span>, <span class="at">resolution =</span> <span class="fl">1.0</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">names</span>(groups) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;C1&quot;</span>, <span class="st">&quot;C2&quot;</span>, <span class="st">&quot;C3&quot;</span>, <span class="st">&quot;C4&quot;</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">print</span>(groups)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># Visualize</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>adj_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">as.table</span>(adj))</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="fu">colnames</span>(adj_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;From&quot;</span>, <span class="st">&quot;To&quot;</span>, <span class="st">&quot;Weight&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">ggplot</span>(adj_df, <span class="fu">aes</span>(<span class="at">x =</span> To, <span class="at">y =</span> From, <span class="at">fill =</span> Weight)) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f&quot;</span>, Weight)), <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">low =</span> <span class="st">&quot;white&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;#ffbb78&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#d62728&quot;</span>, <span class="at">midpoint =</span> <span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">2.5</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">2.5</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Confusion-Based Adjacency Matrix&quot;</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Dashed lines show detected communities (C1,C2 | C3,C4)&quot;</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;R1 Value&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span></code></pre></div>
+</div>
+</div>
+<div id="iterative-optimization" class="section level2">
+<h2>Iterative Optimization</h2>
+<div id="convergence-criteria" class="section level3">
+<h3>Convergence Criteria</h3>
+<p>The optimization continues until:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Target accuracy reached</strong>: <span class="math inline">\(Accuracy \geq \theta_{acc}\)</span></li>
+<li><strong>Maximum rounds exceeded</strong>: <span class="math inline">\(round &gt; max\_rounds\)</span></li>
+<li><strong>Convergence</strong>: No clusters merged in current
+round</li>
+</ol>
+</div>
+<div id="cutoff-adaptation" class="section level3">
+<h3>Cutoff Adaptation</h3>
+<p>Cutoffs are progressively relaxed each outer iteration:</p>
+<p><span class="math display">\[
+\theta_{R1}^{(t+1)} = \theta_{R1}^{(t)} - \Delta_{R1}
+\]</span> <span class="math display">\[
+\theta_{R2}^{(t+1)} = \theta_{R2}^{(t)} - \Delta_{R2}
+\]</span></p>
+</div>
+</div>
+<div id="classifier-comparison" class="section level2">
+<h2>Classifier Comparison</h2>
+<div id="supported-algorithms" class="section level3">
+<h3>Supported Algorithms</h3>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="34%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Algorithm</th>
+<th>Strengths</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Logistic Regression (L1)</strong></td>
+<td>Sparse coefficients, interpretable</td>
+<td>High-dimensional data, marker identification</td>
+</tr>
+<tr class="even">
+<td><strong>Random Forest</strong></td>
+<td>Non-linear, feature importance</td>
+<td>Complex boundaries</td>
+</tr>
+<tr class="odd">
+<td><strong>SVM (RBF)</strong></td>
+<td>Effective in high dimensions</td>
+<td>Well-separated clusters</td>
+</tr>
+<tr class="even">
+<td><strong>XGBoost</strong></td>
+<td>High accuracy, handles imbalance</td>
+<td>Large datasets</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="mathematical-details" class="section level3">
+<h3>Mathematical Details</h3>
+<p><strong>Logistic Regression</strong> (multinomial with L1): <span class="math display">\[
+P(y=k|x) = \frac{\exp(\beta_k^T x)}{\sum_{j=1}^{K}\exp(\beta_j^T x)}
+\]</span></p>
+<p><strong>Random Forest</strong> prediction: <span class="math display">\[
+\hat{y} = \text{mode}\{h_1(x), h_2(x), ..., h_B(x)\}
+\]</span></p>
+<p>Where <span class="math inline">\(h_b\)</span> are individual
+decision trees.</p>
+</div>
+</div>
+<div id="performance-metrics" class="section level2">
+<h2>Performance Metrics</h2>
+<div id="per-cluster-accuracy" class="section level3">
+<h3>Per-Cluster Accuracy</h3>
+<p><span class="math display">\[
+Accuracy_k = \frac{C_{kk}}{\sum_{j=1}^{K} C_{kj}}
+\]</span></p>
+</div>
+<div id="overall-accuracy" class="section level3">
+<h3>Overall Accuracy</h3>
+<p><span class="math display">\[
+Accuracy = \frac{\sum_{k=1}^{K} C_{kk}}{N_{total}}
+\]</span></p>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>The scClustEval framework provides:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Quantitative Assessment</strong>: Objective metrics for
+clustering quality</li>
+<li><strong>Principled Optimization</strong>: Data-driven cluster
+merging</li>
+<li><strong>Flexibility</strong>: Multiple classifiers and customizable
+parameters</li>
+<li><strong>Interpretability</strong>: Confusion analysis reveals
+biological relationships</li>
+</ol>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ol style="list-style-type: decimal">
+<li><p>Miao, Z., et al. (2020). Putative cell type discovery from
+single-cell gene expression data. <em>Nature Methods</em>, 17,
+621-628.</p></li>
+<li><p>Blondel, V. D., et al. (2008). Fast unfolding of communities in
+large networks. <em>Journal of Statistical Mechanics</em>,
+P10008.</p></li>
+<li><p>Friedman, J., Hastie, T., &amp; Tibshirani, R. (2010).
+Regularization paths for generalized linear models via coordinate
+descent. <em>Journal of Statistical Software</em>, 33(1), 1-22.</p></li>
+</ol>
+<hr />
+<p><strong>Author</strong>: Zaoqu Liu (<a href="mailto:liuzaoqu@163.com" class="email">liuzaoqu@163.com</a>)<br />
+<strong>Package</strong>: scClustEval v1.0.0</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

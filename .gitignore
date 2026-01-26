@@ -37,3 +37,6 @@ tests/testthat/_snaps/
 # Misc
 *.log
 *.bak
+/doc/
+/Meta/
+src/symbols.rds

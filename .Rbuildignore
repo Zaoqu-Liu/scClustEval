@@ -15,3 +15,5 @@
 ^data-raw$
 ^\.vscode$
 ^\.cursor$
+^doc$
+^Meta$

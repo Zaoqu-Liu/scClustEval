@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Zaoqu Liu" />
+
+<meta name="date" content="2026-01-26" />
+
+<title>Introduction to scClustEval</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to scClustEval</h1>
+<h4 class="author">Zaoqu Liu</h4>
+<h4 class="date">2026-01-26</h4>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>scClustEval</strong> (Single Cell Clustering Evaluation) is
+an R package for evaluating and optimizing single-cell RNA-seq
+clustering results using self-projection machine learning
+approaches.</p>
+<p>The package implements an iterative optimization strategy that:</p>
+<ol style="list-style-type: decimal">
+<li>Trains a classifier to distinguish between clusters</li>
+<li>Evaluates prediction accuracy via cross-validation</li>
+<li>Identifies cluster pairs that are difficult to discriminate</li>
+<li>Merges confused clusters iteratively until target accuracy is
+reached</li>
+</ol>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># From GitHub</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;Zaoqu-Liu/scClustEval&quot;</span>)</span></code></pre></div>
+</div>
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
+<div id="loading-the-package" class="section level3">
+<h3>Loading the package</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(scClustEval)</span></code></pre></div>
+</div>
+<div id="basic-assessment-with-matrix-input" class="section level3">
+<h3>Basic Assessment with Matrix Input</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Create example data</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>n_cells <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>n_clusters <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Generate expression matrix with cluster structure</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_cells, <span class="at">ncol =</span> n_features)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">character</span>(n_cells)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_clusters) {</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> ((i<span class="dv">-1</span>) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(i <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  X[idx, ] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">100</span> <span class="sc">*</span> n_features, <span class="at">mean =</span> i), <span class="at">nrow =</span> <span class="dv">100</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  labels[idx] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Cluster_&quot;</span>, i)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>}</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># Run assessment</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="at">labels =</span> labels,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">50</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">5</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>)</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co"># Print result</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="fu">print</span>(result)</span></code></pre></div>
+</div>
+<div id="with-seurat-objects" class="section level3">
+<h3>With Seurat Objects</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Load your Seurat object</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;your_data.rds&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Run assessment on existing clustering</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># View results</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">print</span>(result)</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># Plot ROC curves</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="fu">plot_roc</span>(result)</span></code></pre></div>
+</div>
+</div>
+<div id="clustering-optimization" class="section level2">
+<h2>Clustering Optimization</h2>
+<div id="the-optimization-process" class="section level3">
+<h3>The Optimization Process</h3>
+<p>The optimization process works as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Start with an over-clustered result (high resolution)</li>
+<li>Assess the clustering using self-projection</li>
+<li>Build a confusion matrix to identify confused cluster pairs</li>
+<li>Merge clusters that cannot be well discriminated</li>
+<li>Repeat until target accuracy is reached</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Start with over-clustering</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">2.0</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Run optimization</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunOptimization</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.9</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">result_col =</span> <span class="st">&quot;optimized_clusters&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co"># Compare before and after</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="fu">c</span>(<span class="st">&quot;seurat_clusters&quot;</span>, <span class="st">&quot;optimized_clusters&quot;</span>))</span></code></pre></div>
+</div>
+</div>
+<div id="visualization-functions" class="section level2">
+<h2>Visualization Functions</h2>
+<div id="roc-curves" class="section level3">
+<h3>ROC Curves</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Plot ROC and Precision-Recall curves</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;both&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># ROC only</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;roc&quot;</span>)</span></code></pre></div>
+</div>
+<div id="confusion-matrix-heatmap" class="section level3">
+<h3>Confusion Matrix Heatmap</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Raw confusion matrix</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;raw&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># R1-normalized (used for merging decisions)</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>)</span></code></pre></div>
+</div>
+<div id="optimization-history" class="section level3">
+<h3>Optimization History</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Run optimization with matrix input</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>optim_result <span class="ot">&lt;-</span> <span class="fu">sc_optimize_all</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">labels =</span> initial_labels,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.9</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co"># Plot optimization progress</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="fu">plot_optimization_history</span>(optim_result)</span></code></pre></div>
+</div>
+</div>
+<div id="classifier-options" class="section level2">
+<h2>Classifier Options</h2>
+<p>The package supports multiple classifiers:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Classifier</th>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Logistic Regression</td>
+<td><code>&quot;LR&quot;</code></td>
+<td>L1/L2 regularized (default)</td>
+</tr>
+<tr class="even">
+<td>Random Forest</td>
+<td><code>&quot;RF&quot;</code></td>
+<td>Using randomForest package</td>
+</tr>
+<tr class="odd">
+<td>Ranger</td>
+<td><code>&quot;RANGER&quot;</code></td>
+<td>Fast random forest</td>
+</tr>
+<tr class="even">
+<td>SVM</td>
+<td><code>&quot;SVM&quot;</code></td>
+<td>Support Vector Machine</td>
+</tr>
+<tr class="odd">
+<td>Naive Bayes</td>
+<td><code>&quot;NB&quot;</code></td>
+<td>Gaussian Naive Bayes</td>
+</tr>
+<tr class="even">
+<td>Decision Tree</td>
+<td><code>&quot;DT&quot;</code></td>
+<td>Using rpart</td>
+</tr>
+<tr class="odd">
+<td>XGBoost</td>
+<td><code>&quot;XGB&quot;</code></td>
+<td>Gradient boosting</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Using different classifiers</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>result_lr <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(X, labels, <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>result_rf <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(X, labels, <span class="at">classifier =</span> <span class="st">&quot;RF&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>result_svm <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(X, labels, <span class="at">classifier =</span> <span class="st">&quot;SVM&quot;</span>)</span></code></pre></div>
+</div>
+<div id="advanced-usage" class="section level2">
+<h2>Advanced Usage</h2>
+<div id="using-constraints" class="section level3">
+<h3>Using Constraints</h3>
+<p>You can constrain the optimization process using an under-clustering
+as a boundary:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Create low and high resolution clusterings</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">0.2</span>, <span class="at">key_added =</span> <span class="st">&quot;low_res&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">2.0</span>, <span class="at">key_added =</span> <span class="st">&quot;high_res&quot;</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co"># Optimize with constraint</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunOptimization</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;high_res&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="at">under_cluster_col =</span> <span class="st">&quot;low_res&quot;</span>,  <span class="co"># Constraint</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.95</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="parallel-processing" class="section level3">
+<h3>Parallel Processing</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Assessment uses parallel processing automatically</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co"># Control with n_cores parameter</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  X, labels,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">n_cores =</span> <span class="dv">4</span>  <span class="co"># Use 4 cores</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session Info</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; R version 4.4.0 (2024-04-24)</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; Running under: macOS 15.6.1</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; Matrix products: default</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; locale:</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; [1] C</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; time zone: Asia/Shanghai</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; tzcode source: internal</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; attached base packages:</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; other attached packages:</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; [1] scClustEval_1.0.0</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt;  [1] shape_1.4.6.1        gtable_0.3.6         xfun_0.56           </span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt;  [4] bslib_0.9.0          ggplot2_4.0.1        recipes_1.3.1       </span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt;  [7] lattice_0.22-7       vctrs_0.7.1          tools_4.4.0         </span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt; [10] generics_0.1.4       stats4_4.4.0         parallel_4.4.0      </span></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="co">#&gt; [13] tibble_3.3.1         pkgconfig_2.0.3      ModelMetrics_1.2.2.2</span></span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a><span class="co">#&gt; [16] Matrix_1.7-4         data.table_1.18.0    RColorBrewer_1.1-3  </span></span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a><span class="co">#&gt; [19] S7_0.2.1             lifecycle_1.0.5      compiler_4.4.0      </span></span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a><span class="co">#&gt; [22] farver_2.1.2         stringr_1.6.0        codetools_0.2-20    </span></span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a><span class="co">#&gt; [25] htmltools_0.5.9      class_7.3-23         sass_0.4.10         </span></span>
+<span id="cb12-32"><a href="#cb12-32" tabindex="-1"></a><span class="co">#&gt; [28] glmnet_4.1-10        yaml_2.3.12          prodlim_2025.04.28  </span></span>
+<span id="cb12-33"><a href="#cb12-33" tabindex="-1"></a><span class="co">#&gt; [31] pillar_1.11.1        jquerylib_0.1.4      MASS_7.3-65         </span></span>
+<span id="cb12-34"><a href="#cb12-34" tabindex="-1"></a><span class="co">#&gt; [34] cachem_1.1.0         gower_1.0.2          iterators_1.0.14    </span></span>
+<span id="cb12-35"><a href="#cb12-35" tabindex="-1"></a><span class="co">#&gt; [37] rpart_4.1.24         foreach_1.5.2        nlme_3.1-168        </span></span>
+<span id="cb12-36"><a href="#cb12-36" tabindex="-1"></a><span class="co">#&gt; [40] parallelly_1.46.1    lava_1.8.2           tidyselect_1.2.1    </span></span>
+<span id="cb12-37"><a href="#cb12-37" tabindex="-1"></a><span class="co">#&gt; [43] digest_0.6.39        stringi_1.8.7        future_1.69.0       </span></span>
+<span id="cb12-38"><a href="#cb12-38" tabindex="-1"></a><span class="co">#&gt; [46] dplyr_1.1.4          reshape2_1.4.5       purrr_1.2.1         </span></span>
+<span id="cb12-39"><a href="#cb12-39" tabindex="-1"></a><span class="co">#&gt; [49] listenv_0.10.0       splines_4.4.0        fastmap_1.2.0       </span></span>
+<span id="cb12-40"><a href="#cb12-40" tabindex="-1"></a><span class="co">#&gt; [52] grid_4.4.0           cli_3.6.5            magrittr_2.0.4      </span></span>
+<span id="cb12-41"><a href="#cb12-41" tabindex="-1"></a><span class="co">#&gt; [55] dichromat_2.0-0.1    survival_3.8-3       future.apply_1.20.1 </span></span>
+<span id="cb12-42"><a href="#cb12-42" tabindex="-1"></a><span class="co">#&gt; [58] withr_3.0.2          scales_1.4.0         lubridate_1.9.4     </span></span>
+<span id="cb12-43"><a href="#cb12-43" tabindex="-1"></a><span class="co">#&gt; [61] timechange_0.3.0     rmarkdown_2.30       globals_0.18.0      </span></span>
+<span id="cb12-44"><a href="#cb12-44" tabindex="-1"></a><span class="co">#&gt; [64] igraph_2.2.1         otel_0.2.0           nnet_7.3-20         </span></span>
+<span id="cb12-45"><a href="#cb12-45" tabindex="-1"></a><span class="co">#&gt; [67] timeDate_4051.111    evaluate_1.0.5       knitr_1.51          </span></span>
+<span id="cb12-46"><a href="#cb12-46" tabindex="-1"></a><span class="co">#&gt; [70] hardhat_1.4.2        caret_7.0-1          rlang_1.1.7         </span></span>
+<span id="cb12-47"><a href="#cb12-47" tabindex="-1"></a><span class="co">#&gt; [73] Rcpp_1.1.1           glue_1.8.0           pROC_1.19.0.1       </span></span>
+<span id="cb12-48"><a href="#cb12-48" tabindex="-1"></a><span class="co">#&gt; [76] ipred_0.9-15         jsonlite_2.0.0       R6_2.6.1            </span></span>
+<span id="cb12-49"><a href="#cb12-49" tabindex="-1"></a><span class="co">#&gt; [79] plyr_1.8.9</span></span></code></pre></div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>This package is an R implementation inspired by the SCCAF Python
+package:</p>
+<ul>
+<li>Miao, Z., et al. (2020). Putative cell type discovery from
+single-cell gene expression data. <em>Nature Methods</em>.</li>
+<li>SCCAF GitHub: <a href="https://github.com/SCCAF/sccaf" class="uri">https://github.com/SCCAF/sccaf</a></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

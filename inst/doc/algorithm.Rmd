@@ -1,0 +1,375 @@
+---
+title: "Algorithm Principles and Mathematical Foundation"
+author: "Zaoqu Liu"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Algorithm Principles and Mathematical Foundation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  warning = FALSE,
+  message = FALSE,
+  eval = FALSE
+)
+```
+
+## Overview
+
+**scClustEval** implements a self-projection framework for evaluating and optimizing single-cell RNA-seq clustering. This vignette provides a comprehensive explanation of the underlying algorithms and mathematical foundations.
+
+## The Challenge of Cell Clustering Evaluation
+
+In single-cell RNA-seq analysis, clustering algorithms aim to group cells with similar transcriptomic profiles. However, several challenges arise:
+
+1. **Parameter Sensitivity**: Clustering results are highly sensitive to resolution parameters
+2. **Over-clustering**: High resolution may split biologically homogeneous populations
+3. **Under-clustering**: Low resolution may merge distinct cell types
+4. **Lack of Ground Truth**: True cell type labels are rarely available
+
+**scClustEval** addresses these challenges through a quantitative, data-driven approach.
+
+## Self-Projection Framework
+
+### Core Concept
+
+The self-projection method treats cluster evaluation as a classification problem:
+
+> *"If a clustering is biologically meaningful, a classifier should be able to accurately distinguish cells from different clusters based on their gene expression profiles."*
+
+### Algorithm Steps
+
+```{r algorithm_flow, echo=FALSE, fig.height=4}
+library(ggplot2)
+
+steps <- data.frame(
+  step = factor(1:5, labels = c(
+    "1. Data Split",
+    "2. Train Classifier", 
+    "3. Cross-Validate",
+    "4. Compute Confusion",
+    "5. Merge Clusters"
+  )),
+  description = c(
+    "Stratified train/test split",
+    "Multi-class classification",
+    "K-fold CV on training set",
+    "Build confusion matrix",
+    "Graph-based merging"
+  ),
+  x = 1:5,
+  y = rep(1, 5)
+)
+
+ggplot(steps, aes(x = x, y = y)) +
+  geom_segment(aes(xend = x, yend = 0), color = "#3cb44b", size = 2) +
+  geom_point(size = 8, color = "#3cb44b") +
+  geom_text(aes(label = step), y = -0.3, size = 3.5, fontface = "bold") +
+  geom_text(aes(label = description), y = 0.3, size = 3) +
+  theme_void() +
+  ylim(-0.8, 0.8) +
+  labs(title = "Self-Projection Algorithm Pipeline") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14))
+```
+
+### Mathematical Formulation
+
+#### 1. Data Partitioning
+
+Given expression matrix $\mathbf{X} \in \mathbb{R}^{n \times p}$ with $n$ cells and $p$ features, and cluster labels $\mathbf{y} \in \{1, ..., K\}^n$:
+
+$$
+\mathbf{X} = \mathbf{X}_{train} \cup \mathbf{X}_{test}
+$$
+
+Stratified sampling ensures each cluster $k$ contributes proportionally:
+
+$$
+\frac{n_k^{train}}{n^{train}} \approx \frac{n_k^{test}}{n^{test}} \approx \frac{n_k}{n}
+$$
+
+#### 2. Classification Model
+
+We train a multi-class classifier $f: \mathbb{R}^p \rightarrow \{1, ..., K\}$ that predicts cluster membership. The default is L1-regularized logistic regression:
+
+$$
+\min_{\boldsymbol{\beta}} -\sum_{i=1}^{n_{train}} \log P(y_i | \mathbf{x}_i, \boldsymbol{\beta}) + \lambda ||\boldsymbol{\beta}||_1
+$$
+
+#### 3. Confusion Matrix
+
+The confusion matrix $\mathbf{C} \in \mathbb{R}^{K \times K}$ is computed on the test set:
+
+$$
+C_{ij} = |\{x : y_{true}(x) = i \land y_{pred}(x) = j\}|
+$$
+
+Where:
+- $C_{ii}$ (diagonal): correctly classified cells from cluster $i$
+- $C_{ij}$ (off-diagonal): cells from cluster $i$ misclassified as cluster $j$
+
+## Confusion Matrix Normalization
+
+### R1 Normalization
+
+R1 normalization measures **pairwise confusion rate** relative to correct classifications:
+
+$$
+R1(i, j) = \max\left(\frac{C_{ij}}{C_{jj}}, \frac{C_{ji}}{C_{ii}}\right)
+$$
+
+**Interpretation:**
+- $R1 = 0$: Perfect discrimination
+- $R1 > 1$: More misclassifications than correct classifications (severe confusion)
+- High R1 indicates clusters should potentially be merged
+
+```{r r1_example, echo=TRUE}
+library(scClustEval)
+
+# Example confusion matrix
+cmat <- matrix(c(
+  90, 5, 3,    # Cluster A: 90 correct, 5 misclassified as B, 3 as C
+  8, 85, 7,   # Cluster B: 8 misclassified as A, 85 correct, 7 as C  
+  2, 12, 86   # Cluster C: 2 as A, 12 as B, 86 correct
+), nrow = 3, byrow = TRUE)
+rownames(cmat) <- colnames(cmat) <- c("A", "B", "C")
+
+# Compute R1 normalization
+r1_mat <- normalize_confmat_r1(cmat)
+print(round(r1_mat, 3))
+```
+
+### R2 Normalization
+
+R2 normalization measures **overall confusion proportion** in the dataset:
+
+$$
+R2(i, j) = \frac{C_{ij} + C_{ji}}{N_{total}}
+$$
+
+Where $N_{total} = \sum_{i,j} C_{ij}$.
+
+**Interpretation:**
+- R2 represents the fraction of total cells confused between clusters $i$ and $j$
+- Values range from 0 to 1
+- Useful for identifying globally important confusions
+
+```{r r2_example, echo=TRUE}
+# Compute R2 normalization
+r2_mat <- normalize_confmat_r2(cmat)
+print(round(r2_mat, 4))
+```
+
+## Visualization of Confusion Analysis
+
+```{r confusion_viz, echo=TRUE, fig.height=5, fig.width=10}
+library(ggplot2)
+library(gridExtra)
+
+# Create data for visualization
+df_r1 <- as.data.frame(as.table(r1_mat))
+colnames(df_r1) <- c("True", "Predicted", "R1")
+
+df_r2 <- as.data.frame(as.table(r2_mat))
+colnames(df_r2) <- c("True", "Predicted", "R2")
+
+p1 <- ggplot(df_r1, aes(x = Predicted, y = True, fill = R1)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", R1)), color = "white", size = 5) +
+  scale_fill_gradient(low = "gray90", high = "#d62728") +
+  labs(title = "R1 Normalization", subtitle = "Pairwise confusion rate") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
+
+p2 <- ggplot(df_r2, aes(x = Predicted, y = True, fill = R2)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.3f", R2)), color = "white", size = 5) +
+  scale_fill_gradient(low = "gray90", high = "#1f77b4") +
+  labs(title = "R2 Normalization", subtitle = "Global confusion proportion") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+## Cluster Merging Strategy
+
+### Graph-Based Approach
+
+Clusters exceeding confusion thresholds are connected in an adjacency graph:
+
+$$
+A_{ij} = \begin{cases} 
+1 & \text{if } R1(i,j) > \theta_{R1} \text{ or } R2(i,j) > \theta_{R2} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+### Community Detection
+
+The Louvain algorithm identifies communities (groups of confused clusters) by maximizing modularity:
+
+$$
+Q = \frac{1}{2m}\sum_{ij}\left[A_{ij} - \frac{k_i k_j}{2m}\right]\delta(c_i, c_j)
+$$
+
+Where:
+- $m$ = total number of edges
+- $k_i$ = degree of node $i$
+- $c_i$ = community assignment of node $i$
+- $\delta$ = Kronecker delta
+
+```{r merging_demo, echo=TRUE, fig.height=4}
+# Demonstrate adjacency matrix clustering
+adj <- matrix(c(
+  0, 0.3, 0.02, 0.01,
+  0.3, 0, 0.25, 0.02,
+  0.02, 0.25, 0, 0.01,
+  0.01, 0.02, 0.01, 0
+), nrow = 4, byrow = TRUE)
+rownames(adj) <- colnames(adj) <- c("C1", "C2", "C3", "C4")
+
+# Cluster at threshold 0.1
+groups <- cluster_adjacency_matrix(adj, cutoff = 0.1, resolution = 1.0)
+names(groups) <- c("C1", "C2", "C3", "C4")
+print(groups)
+
+# Visualize
+adj_df <- as.data.frame(as.table(adj))
+colnames(adj_df) <- c("From", "To", "Weight")
+
+ggplot(adj_df, aes(x = To, y = From, fill = Weight)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", Weight)), size = 4) +
+  scale_fill_gradient2(low = "white", mid = "#ffbb78", high = "#d62728", midpoint = 0.15) +
+  geom_hline(yintercept = 2.5, linetype = "dashed", color = "black", size = 1) +
+  geom_vline(xintercept = 2.5, linetype = "dashed", color = "black", size = 1) +
+  labs(title = "Confusion-Based Adjacency Matrix",
+       subtitle = "Dashed lines show detected communities (C1,C2 | C3,C4)",
+       fill = "R1 Value") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+## Iterative Optimization
+
+### Convergence Criteria
+
+The optimization continues until:
+
+1. **Target accuracy reached**: $Accuracy \geq \theta_{acc}$
+2. **Maximum rounds exceeded**: $round > max\_rounds$
+3. **Convergence**: No clusters merged in current round
+
+### Cutoff Adaptation
+
+Cutoffs are progressively relaxed each outer iteration:
+
+$$
+\theta_{R1}^{(t+1)} = \theta_{R1}^{(t)} - \Delta_{R1}
+$$
+$$
+\theta_{R2}^{(t+1)} = \theta_{R2}^{(t)} - \Delta_{R2}
+$$
+
+```{r optimization_flow, echo=FALSE, fig.height=5}
+# Simulated optimization trajectory
+rounds <- 1:8
+accuracy <- c(0.72, 0.78, 0.83, 0.86, 0.88, 0.91, 0.93, 0.94)
+clusters <- c(15, 12, 10, 8, 7, 6, 5, 5)
+
+df <- data.frame(
+  Round = rounds,
+  Accuracy = accuracy,
+  Clusters = clusters
+)
+
+p1 <- ggplot(df, aes(x = Round, y = Accuracy)) +
+  geom_line(color = "#3cb44b", size = 1.5) +
+  geom_point(color = "#3cb44b", size = 3) +
+  geom_hline(yintercept = 0.9, linetype = "dashed", color = "red") +
+  annotate("text", x = 7, y = 0.92, label = "Target: 90%", color = "red") +
+  labs(title = "Accuracy Progression", y = "Test Accuracy") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
+
+p2 <- ggplot(df, aes(x = Round, y = Clusters)) +
+  geom_line(color = "#e6194b", size = 1.5) +
+  geom_point(color = "#e6194b", size = 3) +
+  labs(title = "Cluster Count", y = "Number of Clusters") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"))
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+## Classifier Comparison
+
+### Supported Algorithms
+
+| Algorithm | Strengths | Best For |
+|-----------|-----------|----------|
+| **Logistic Regression (L1)** | Sparse coefficients, interpretable | High-dimensional data, marker identification |
+| **Random Forest** | Non-linear, feature importance | Complex boundaries |
+| **SVM (RBF)** | Effective in high dimensions | Well-separated clusters |
+| **XGBoost** | High accuracy, handles imbalance | Large datasets |
+
+### Mathematical Details
+
+**Logistic Regression** (multinomial with L1):
+$$
+P(y=k|x) = \frac{\exp(\beta_k^T x)}{\sum_{j=1}^{K}\exp(\beta_j^T x)}
+$$
+
+**Random Forest** prediction:
+$$
+\hat{y} = \text{mode}\{h_1(x), h_2(x), ..., h_B(x)\}
+$$
+
+Where $h_b$ are individual decision trees.
+
+## Performance Metrics
+
+### Per-Cluster Accuracy
+
+$$
+Accuracy_k = \frac{C_{kk}}{\sum_{j=1}^{K} C_{kj}}
+$$
+
+### Overall Accuracy
+
+$$
+Accuracy = \frac{\sum_{k=1}^{K} C_{kk}}{N_{total}}
+$$
+
+## Summary
+
+The scClustEval framework provides:
+
+1. **Quantitative Assessment**: Objective metrics for clustering quality
+2. **Principled Optimization**: Data-driven cluster merging
+3. **Flexibility**: Multiple classifiers and customizable parameters
+4. **Interpretability**: Confusion analysis reveals biological relationships
+
+## References
+
+1. Miao, Z., et al. (2020). Putative cell type discovery from single-cell gene expression data. *Nature Methods*, 17, 621-628.
+
+2. Blondel, V. D., et al. (2008). Fast unfolding of communities in large networks. *Journal of Statistical Mechanics*, P10008.
+
+3. Friedman, J., Hastie, T., & Tibshirani, R. (2010). Regularization paths for generalized linear models via coordinate descent. *Journal of Statistical Software*, 33(1), 1-22.
+
+---
+
+**Author**: Zaoqu Liu (liuzaoqu@163.com)  
+**Package**: scClustEval v`r packageVersion("scClustEval")`

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Zaoqu Liu" />
+
+<meta name="date" content="2026-01-26" />
+
+<title>Visualization Guide</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Visualization Guide</h1>
+<h4 class="author">Zaoqu Liu</h4>
+<h4 class="date">2026-01-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview" id="toc-overview">Overview</a></li>
+<li><a href="#preparing-example-data" id="toc-preparing-example-data">Preparing Example Data</a></li>
+<li><a href="#roc-and-precision-recall-curves" id="toc-roc-and-precision-recall-curves">ROC and Precision-Recall
+Curves</a></li>
+<li><a href="#confusion-matrix-heatmaps" id="toc-confusion-matrix-heatmaps">Confusion Matrix Heatmaps</a></li>
+<li><a href="#per-cluster-accuracy-plots" id="toc-per-cluster-accuracy-plots">Per-Cluster Accuracy Plots</a></li>
+<li><a href="#optimization-visualization" id="toc-optimization-visualization">Optimization Visualization</a></li>
+<li><a href="#sankey-diagrams" id="toc-sankey-diagrams">Sankey
+Diagrams</a></li>
+<li><a href="#creating-publication-ready-figures" id="toc-creating-publication-ready-figures">Creating Publication-Ready
+Figures</a></li>
+<li><a href="#saving-plots" id="toc-saving-plots">Saving Plots</a></li>
+<li><a href="#theme-customization" id="toc-theme-customization">Theme
+Customization</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</div>
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>scClustEval</strong> provides a comprehensive suite of
+visualization functions for exploring clustering assessment and
+optimization results. This guide demonstrates all available plotting
+options.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(scClustEval)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+</div>
+<div id="preparing-example-data" class="section level2">
+<h2>Preparing Example Data</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create synthetic data</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>n_cells <span class="ot">&lt;-</span> <span class="dv">800</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> <span class="dv">60</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>n_clusters <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> n_cells, <span class="at">ncol =</span> n_features)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">character</span>(n_cells)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>cells_per_cluster <span class="ot">&lt;-</span> n_cells <span class="sc">/</span> n_clusters</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_clusters) {</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  start_idx <span class="ot">&lt;-</span> (i <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> cells_per_cluster <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  end_idx <span class="ot">&lt;-</span> i <span class="sc">*</span> cells_per_cluster</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  cluster_mean <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_features, <span class="at">mean =</span> i <span class="sc">*</span> <span class="fl">1.5</span>, <span class="at">sd =</span> <span class="fl">0.3</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  X[start_idx<span class="sc">:</span>end_idx, ] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    <span class="fu">rep</span>(cluster_mean, cells_per_cluster) <span class="sc">+</span> <span class="fu">rnorm</span>(cells_per_cluster <span class="sc">*</span> n_features, <span class="at">sd =</span> <span class="fl">0.8</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    <span class="at">nrow =</span> cells_per_cluster,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  )</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  labels[start_idx<span class="sc">:</span>end_idx] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Type_&quot;</span>, LETTERS[i])</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>}</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="fu">colnames</span>(X) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Gene_&quot;</span>, <span class="dv">1</span><span class="sc">:</span>n_features)</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co"># Run assessment</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  <span class="at">X =</span> X, <span class="at">labels =</span> labels,</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">100</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">5</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="roc-and-precision-recall-curves" class="section level2">
+<h2>ROC and Precision-Recall Curves</h2>
+<div id="basic-roc-plot" class="section level3">
+<h3>Basic ROC Plot</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;roc&quot;</span>)</span></code></pre></div>
+</div>
+<div id="precision-recall-curves" class="section level3">
+<h3>Precision-Recall Curves</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;prc&quot;</span>)</span></code></pre></div>
+</div>
+<div id="combined-roc-and-prc" class="section level3">
+<h3>Combined ROC and PRC</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;both&quot;</span>, <span class="at">show_auc =</span> <span class="cn">TRUE</span>, <span class="at">show_cv =</span> <span class="cn">TRUE</span>, <span class="at">show_acc =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="customizing-roc-plots" class="section level3">
+<h3>Customizing ROC Plots</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Custom colors</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>custom_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#E41A1C&quot;</span>, <span class="st">&quot;#377EB8&quot;</span>, <span class="st">&quot;#4DAF4A&quot;</span>, <span class="st">&quot;#984EA3&quot;</span>, <span class="st">&quot;#FF7F00&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">plot_roc</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  result,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">plot_type =</span> <span class="st">&quot;roc&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">colors =</span> custom_colors,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Cluster Discrimination Performance&quot;</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">legend_position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="confusion-matrix-heatmaps" class="section level2">
+<h2>Confusion Matrix Heatmaps</h2>
+<div id="raw-confusion-matrix" class="section level3">
+<h3>Raw Confusion Matrix</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;raw&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Raw Confusion Matrix&quot;</span>)</span></code></pre></div>
+</div>
+<div id="r1-normalized-default" class="section level3">
+<h3>R1-Normalized (Default)</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  result, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;R1-Normalized Confusion&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">show_values =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">text_size =</span> <span class="dv">4</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="r2-normalized" class="section level3">
+<h3>R2-Normalized</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  result,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">normalized =</span> <span class="st">&quot;R2&quot;</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;R2-Normalized Confusion&quot;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="custom-color-schemes" class="section level3">
+<h3>Custom Color Schemes</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Custom gradient</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  result,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">c</span>(<span class="st">&quot;#F7FBFF&quot;</span>, <span class="st">&quot;#08306B&quot;</span>),  <span class="co"># Blue gradient</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Blue Theme Confusion Matrix&quot;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="side-by-side-comparison" class="section level3">
+<h3>Side-by-Side Comparison</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;raw&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Raw Counts&quot;</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>, <span class="at">title =</span> <span class="st">&quot;R1 Normalized&quot;</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R2&quot;</span>, <span class="at">title =</span> <span class="st">&quot;R2 Normalized&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, p3, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="per-cluster-accuracy-plots" class="section level2">
+<h2>Per-Cluster Accuracy Plots</h2>
+<div id="assessment-summary" class="section level3">
+<h3>Assessment Summary</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot_assessment_summary</span>(result, <span class="at">include =</span> <span class="fu">c</span>(<span class="st">&quot;accuracy&quot;</span>))</span></code></pre></div>
+</div>
+<div id="custom-accuracy-plot" class="section level3">
+<h3>Custom Accuracy Plot</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Extract per-cluster accuracy</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>acc_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="at">Cluster =</span> <span class="fu">names</span>(result<span class="sc">$</span>per_class_accuracy),</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="at">Accuracy =</span> result<span class="sc">$</span>per_class_accuracy</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>acc_df <span class="ot">&lt;-</span> acc_df[<span class="fu">order</span>(acc_df<span class="sc">$</span>Accuracy), ]</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>acc_df<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">factor</span>(acc_df<span class="sc">$</span>Cluster, <span class="at">levels =</span> acc_df<span class="sc">$</span>Cluster)</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="fu">ggplot</span>(acc_df, <span class="fu">aes</span>(<span class="at">x =</span> Cluster, <span class="at">y =</span> Accuracy, <span class="at">fill =</span> Accuracy)) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> result<span class="sc">$</span>accuracy, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, Accuracy <span class="sc">*</span> <span class="dv">100</span>)), </span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">low =</span> <span class="st">&quot;#d62728&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;#ff7f0e&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#2ca02c&quot;</span>, </span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>                       <span class="at">midpoint =</span> <span class="fl">0.85</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Per-Cluster Classification Accuracy&quot;</span>,</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">&quot;Overall accuracy: %.1f%% (dashed line)&quot;</span>, result<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Accuracy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">1.15</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="optimization-visualization" class="section level2">
+<h2>Optimization Visualization</h2>
+<div id="preparing-optimization-results" class="section level3">
+<h3>Preparing Optimization Results</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Create over-clustered scenario</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>labels_over <span class="ot">&lt;-</span> labels</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Type_A&quot;</span>][<span class="dv">1</span><span class="sc">:</span><span class="dv">80</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Type_A1&quot;</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Type_A&quot;</span>][<span class="dv">81</span><span class="sc">:</span><span class="dv">160</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Type_A2&quot;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Type_B&quot;</span>][<span class="dv">1</span><span class="sc">:</span><span class="dv">80</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Type_B1&quot;</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Type_B&quot;</span>][<span class="dv">81</span><span class="sc">:</span><span class="dv">160</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Type_B2&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co"># Run optimization</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>optim_result <span class="ot">&lt;-</span> <span class="fu">sc_optimize_all</span>(</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>  <span class="at">labels =</span> labels_over,</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.90</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>  <span class="at">max_rounds =</span> <span class="dv">8</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>  <span class="at">r1_cutoff =</span> <span class="fl">0.5</span>,</span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="optimization-history" class="section level3">
+<h3>Optimization History</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">plot_optimization_history</span>(optim_result, <span class="at">metric =</span> <span class="st">&quot;accuracy&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plot_optimization_history</span>(optim_result, <span class="at">metric =</span> <span class="st">&quot;clusters&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">plot_optimization_history</span>(optim_result, <span class="at">metric =</span> <span class="st">&quot;both&quot;</span>)</span></code></pre></div>
+</div>
+<div id="custom-optimization-plot" class="section level3">
+<h3>Custom Optimization Plot</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Create detailed optimization trajectory</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>rounds <span class="ot">&lt;-</span> <span class="fu">seq_along</span>(optim_result<span class="sc">$</span>accuracy_history)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>df_optim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="at">Round =</span> rounds,</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>  <span class="at">Accuracy =</span> optim_result<span class="sc">$</span>accuracy_history,</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="at">Clusters =</span> optim_result<span class="sc">$</span>n_clusters_history[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>)</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_optim, <span class="fu">aes</span>(<span class="at">x =</span> Round, <span class="at">y =</span> Accuracy)) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="fl">0.7</span>, <span class="at">ymax =</span> Accuracy), <span class="at">fill =</span> <span class="st">&quot;#3cb44b&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;#3cb44b&quot;</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#3cb44b&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.9</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fu">max</span>(rounds) <span class="sc">-</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="fl">0.92</span>, </span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a>           <span class="at">label =</span> <span class="st">&quot;Target&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Accuracy Improvement&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Accuracy&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Round&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">14</span>))</span>
+<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a></span>
+<span id="cb18-22"><a href="#cb18-22" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_optim, <span class="fu">aes</span>(<span class="at">x =</span> Round, <span class="at">y =</span> Clusters)) <span class="sc">+</span></span>
+<span id="cb18-23"><a href="#cb18-23" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">fill =</span> <span class="st">&quot;#e6194b&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb18-24"><a href="#cb18-24" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;#e6194b&quot;</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb18-25"><a href="#cb18-25" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#e6194b&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb18-26"><a href="#cb18-26" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cluster Reduction&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of Clusters&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Round&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-27"><a href="#cb18-27" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-28"><a href="#cb18-28" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">14</span>))</span>
+<span id="cb18-29"><a href="#cb18-29" tabindex="-1"></a></span>
+<span id="cb18-30"><a href="#cb18-30" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="sankey-diagrams" class="section level2">
+<h2>Sankey Diagrams</h2>
+<div id="basic-sankey" class="section level3">
+<h3>Basic Sankey</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;ggalluvial&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="fu">plot_cluster_sankey</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>    <span class="at">labels_from =</span> labels_over,</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>    <span class="at">labels_to =</span> <span class="fu">as.character</span>(optim_result<span class="sc">$</span>final_labels)</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  )</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="custom-sankey" class="section level3">
+<h3>Custom Sankey</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;ggalluvial&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  custom_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>    <span class="st">&quot;Type_A1&quot;</span> <span class="ot">=</span> <span class="st">&quot;#e6194b&quot;</span>, <span class="st">&quot;Type_A2&quot;</span> <span class="ot">=</span> <span class="st">&quot;#f58231&quot;</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    <span class="st">&quot;Type_B1&quot;</span> <span class="ot">=</span> <span class="st">&quot;#3cb44b&quot;</span>, <span class="st">&quot;Type_B2&quot;</span> <span class="ot">=</span> <span class="st">&quot;#46f0f0&quot;</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>    <span class="st">&quot;Type_C&quot;</span> <span class="ot">=</span> <span class="st">&quot;#4363d8&quot;</span>, <span class="st">&quot;Type_D&quot;</span> <span class="ot">=</span> <span class="st">&quot;#911eb4&quot;</span>, <span class="st">&quot;Type_E&quot;</span> <span class="ot">=</span> <span class="st">&quot;#f032e6&quot;</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;#808080&quot;</span>, <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="st">&quot;#808080&quot;</span>, <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="st">&quot;#808080&quot;</span>, </span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>    <span class="st">&quot;4&quot;</span> <span class="ot">=</span> <span class="st">&quot;#808080&quot;</span>, <span class="st">&quot;5&quot;</span> <span class="ot">=</span> <span class="st">&quot;#808080&quot;</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>  )</span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>  </span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>  <span class="fu">plot_cluster_sankey</span>(</span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>    <span class="at">labels_from =</span> labels_over,</span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>    <span class="at">labels_to =</span> <span class="fu">as.character</span>(optim_result<span class="sc">$</span>final_labels),</span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Cluster Merging Flow&quot;</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>    <span class="at">colors =</span> custom_colors,</span>
+<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>  )</span>
+<span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="creating-publication-ready-figures" class="section level2">
+<h2>Creating Publication-Ready Figures</h2>
+<div id="combined-assessment-figure" class="section level3">
+<h3>Combined Assessment Figure</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Create comprehensive figure</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="co"># Panel A: ROC curves</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>p_roc <span class="ot">&lt;-</span> <span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;roc&quot;</span>, <span class="at">show_auc =</span> <span class="cn">FALSE</span>, <span class="at">legend_position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;A. ROC Curves&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>))</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co"># Panel B: Confusion heatmap</span></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>p_conf <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>, <span class="at">show_values =</span> <span class="cn">TRUE</span>, <span class="at">text_size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;B. R1-Normalized Confusion&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>))</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="co"># Panel C: Per-cluster accuracy</span></span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a>acc_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a>  <span class="at">Cluster =</span> <span class="fu">factor</span>(<span class="fu">names</span>(result<span class="sc">$</span>per_class_accuracy), </span>
+<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a>                   <span class="at">levels =</span> <span class="fu">names</span>(<span class="fu">sort</span>(result<span class="sc">$</span>per_class_accuracy))),</span>
+<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a>  <span class="at">Accuracy =</span> result<span class="sc">$</span>per_class_accuracy</span>
+<span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a>)</span>
+<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a>p_acc <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(acc_df, <span class="fu">aes</span>(<span class="at">x =</span> Cluster, <span class="at">y =</span> Accuracy)) <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">&quot;#3cb44b&quot;</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> result<span class="sc">$</span>accuracy, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb21-24"><a href="#cb21-24" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;C. Per-Cluster Accuracy&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Accuracy&quot;</span>, <span class="at">x =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb21-25"><a href="#cb21-25" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-26"><a href="#cb21-26" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb21-27"><a href="#cb21-27" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb21-28"><a href="#cb21-28" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" tabindex="-1"></a><span class="co"># Panel D: Metrics summary</span></span>
+<span id="cb21-30"><a href="#cb21-30" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb21-31"><a href="#cb21-31" tabindex="-1"></a>  <span class="at">Metric =</span> <span class="fu">c</span>(<span class="st">&quot;Test Accuracy&quot;</span>, <span class="st">&quot;CV Accuracy&quot;</span>, <span class="st">&quot;Max R1&quot;</span>, <span class="st">&quot;Max R2&quot;</span>),</span>
+<span id="cb21-32"><a href="#cb21-32" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">c</span>(result<span class="sc">$</span>accuracy, result<span class="sc">$</span>cv_accuracy, result<span class="sc">$</span>max_r1, result<span class="sc">$</span>max_r2)</span>
+<span id="cb21-33"><a href="#cb21-33" tabindex="-1"></a>)</span>
+<span id="cb21-34"><a href="#cb21-34" tabindex="-1"></a>p_metrics <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(metrics, <span class="fu">aes</span>(<span class="at">x =</span> Metric, <span class="at">y =</span> Value, <span class="at">fill =</span> Metric)) <span class="sc">+</span></span>
+<span id="cb21-35"><a href="#cb21-35" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb21-36"><a href="#cb21-36" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.3f&quot;</span>, Value)), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb21-37"><a href="#cb21-37" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#1f77b4&quot;</span>, <span class="st">&quot;#ff7f0e&quot;</span>, <span class="st">&quot;#d62728&quot;</span>, <span class="st">&quot;#2ca02c&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb21-38"><a href="#cb21-38" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;D. Assessment Metrics&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Value&quot;</span>, <span class="at">x =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb21-39"><a href="#cb21-39" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-40"><a href="#cb21-40" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb21-41"><a href="#cb21-41" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb21-42"><a href="#cb21-42" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb21-43"><a href="#cb21-43" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">1.1</span>)</span>
+<span id="cb21-44"><a href="#cb21-44" tabindex="-1"></a></span>
+<span id="cb21-45"><a href="#cb21-45" tabindex="-1"></a><span class="co"># Arrange panels</span></span>
+<span id="cb21-46"><a href="#cb21-46" tabindex="-1"></a><span class="fu">grid.arrange</span>(p_roc, p_conf, p_acc, p_metrics, </span>
+<span id="cb21-47"><a href="#cb21-47" tabindex="-1"></a>             <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>,</span>
+<span id="cb21-48"><a href="#cb21-48" tabindex="-1"></a>             <span class="at">top =</span> grid<span class="sc">::</span><span class="fu">textGrob</span>(<span class="st">&quot;Clustering Assessment Overview&quot;</span>, </span>
+<span id="cb21-49"><a href="#cb21-49" tabindex="-1"></a>                                  <span class="at">gp =</span> grid<span class="sc">::</span><span class="fu">gpar</span>(<span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">fontsize =</span> <span class="dv">16</span>)))</span></code></pre></div>
+</div>
+</div>
+<div id="saving-plots" class="section level2">
+<h2>Saving Plots</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Save individual plots</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;roc_curves.pdf&quot;</span>, <span class="fu">plot_roc</span>(result), <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">6</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;confusion_matrix.png&quot;</span>, <span class="fu">plot_confusion_heatmap</span>(result), </span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">7</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="co"># Save combined figure</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>combined_fig <span class="ot">&lt;-</span> <span class="fu">grid.arrange</span>(p_roc, p_conf, p_acc, p_metrics, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;assessment_overview.pdf&quot;</span>, combined_fig, <span class="at">width =</span> <span class="dv">14</span>, <span class="at">height =</span> <span class="dv">10</span>)</span></code></pre></div>
+</div>
+<div id="theme-customization" class="section level2">
+<h2>Theme Customization</h2>
+<div id="applying-custom-themes" class="section level3">
+<h3>Applying Custom Themes</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Create a custom theme</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>theme_scClustEval <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>      <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;gray40&quot;</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a>      <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">11</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a>    )</span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a>}</span>
+<span id="cb23-14"><a href="#cb23-14" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" tabindex="-1"></a><span class="co"># Apply custom theme</span></span>
+<span id="cb23-16"><a href="#cb23-16" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;roc&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb23-17"><a href="#cb23-17" tabindex="-1"></a>  <span class="fu">theme_scClustEval</span>() <span class="sc">+</span></span>
+<span id="cb23-18"><a href="#cb23-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;ROC Analysis with Custom Theme&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>This guide covered all visualization functions in scClustEval:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>plot_roc()</code></td>
+<td>ROC and Precision-Recall curves</td>
+</tr>
+<tr class="even">
+<td><code>plot_confusion_heatmap()</code></td>
+<td>Confusion matrix visualization</td>
+</tr>
+<tr class="odd">
+<td><code>plot_assessment_summary()</code></td>
+<td>Combined assessment plots</td>
+</tr>
+<tr class="even">
+<td><code>plot_optimization_history()</code></td>
+<td>Optimization trajectory</td>
+</tr>
+<tr class="odd">
+<td><code>plot_cluster_sankey()</code></td>
+<td>Cluster reassignment flow</td>
+</tr>
+</tbody>
+</table>
+<p>All functions return <code>ggplot2</code> objects that can be further
+customized.</p>
+<hr />
+<p><strong>Author</strong>: Zaoqu Liu (<a href="mailto:liuzaoqu@163.com" class="email">liuzaoqu@163.com</a>)<br />
+<strong>Package</strong>: scClustEval v1.0.0</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

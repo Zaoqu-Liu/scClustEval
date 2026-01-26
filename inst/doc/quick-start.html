@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Zaoqu Liu" />
+
+<meta name="date" content="2026-01-26" />
+
+<title>Quick Start Guide</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Quick Start Guide</h1>
+<h4 class="author">Zaoqu Liu</h4>
+<h4 class="date">2026-01-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#installation" id="toc-installation">Installation</a></li>
+<li><a href="#loading-the-package" id="toc-loading-the-package">Loading
+the Package</a></li>
+<li><a href="#creating-example-data" id="toc-creating-example-data">Creating Example Data</a></li>
+<li><a href="#basic-assessment" id="toc-basic-assessment">Basic
+Assessment</a></li>
+<li><a href="#visualization" id="toc-visualization">Visualization</a></li>
+<li><a href="#simulating-over-clustering" id="toc-simulating-over-clustering">Simulating Over-Clustering</a></li>
+<li><a href="#single-optimization-round" id="toc-single-optimization-round">Single Optimization Round</a></li>
+<li><a href="#full-optimization-pipeline" id="toc-full-optimization-pipeline">Full Optimization Pipeline</a></li>
+<li><a href="#using-different-classifiers" id="toc-using-different-classifiers">Using Different
+Classifiers</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette demonstrates the core functionality of
+<strong>scClustEval</strong> with executable examples using simulated
+data.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># From R-universe (recommended)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;scClustEval&quot;</span>, <span class="at">repos =</span> <span class="st">&quot;https://zaoqu-liu.r-universe.dev&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># From GitHub</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;Zaoqu-Liu/scClustEval&quot;</span>)</span></code></pre></div>
+</div>
+<div id="loading-the-package" class="section level2">
+<h2>Loading the Package</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(scClustEval)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+</div>
+<div id="creating-example-data" class="section level2">
+<h2>Creating Example Data</h2>
+<p>Let’s create a synthetic dataset with known cluster structure to
+demonstrate the assessment workflow.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Generate synthetic single-cell data</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>n_cells <span class="ot">&lt;-</span> <span class="dv">600</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>n_clusters <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Create expression matrix with distinct clusters</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> n_cells, <span class="at">ncol =</span> n_features)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">character</span>(n_cells)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>cells_per_cluster <span class="ot">&lt;-</span> n_cells <span class="sc">/</span> n_clusters</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_clusters) {</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  start_idx <span class="ot">&lt;-</span> (i <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> cells_per_cluster <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  end_idx <span class="ot">&lt;-</span> i <span class="sc">*</span> cells_per_cluster</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  </span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="co"># Each cluster has a distinct mean expression profile</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  cluster_mean <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_features, <span class="at">mean =</span> i <span class="sc">*</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  X[start_idx<span class="sc">:</span>end_idx, ] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>    <span class="fu">rep</span>(cluster_mean, cells_per_cluster) <span class="sc">+</span> <span class="fu">rnorm</span>(cells_per_cluster <span class="sc">*</span> n_features, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>    <span class="at">nrow =</span> cells_per_cluster,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>    <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  )</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  labels[start_idx<span class="sc">:</span>end_idx] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Cluster_&quot;</span>, i)</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>}</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="fu">colnames</span>(X) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Gene_&quot;</span>, <span class="dv">1</span><span class="sc">:</span>n_features)</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Data dimensions:&quot;</span>, <span class="fu">nrow</span>(X), <span class="st">&quot;cells x&quot;</span>, <span class="fu">ncol</span>(X), <span class="st">&quot;features</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Clusters:&quot;</span>, <span class="fu">unique</span>(labels), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-assessment" class="section level2">
+<h2>Basic Assessment</h2>
+<div id="running-self-projection" class="section level3">
+<h3>Running Self-Projection</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Run clustering assessment</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">labels =</span> labels,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,    <span class="co"># Logistic Regression</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">penalty =</span> <span class="st">&quot;l1&quot;</span>,       <span class="co"># L1 regularization (Lasso)</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">test_size =</span> <span class="fl">0.5</span>,      <span class="co"># 50% for testing</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">100</span>,    <span class="co"># Max 100 cells per cluster in training</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">5</span>,               <span class="co"># 5-fold cross-validation</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># View summary</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">print</span>(result)</span></code></pre></div>
+</div>
+<div id="understanding-results" class="section level3">
+<h3>Understanding Results</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Key metrics</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Key Metrics ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Test Accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, result<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;CV Accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, result<span class="sc">$</span>cv_accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Max R1 Confusion:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.4f&quot;</span>, result<span class="sc">$</span>max_r1), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Max R2 Confusion:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.4f&quot;</span>, result<span class="sc">$</span>max_r2), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># Per-cluster accuracy</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Per-Cluster Accuracy ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="cf">for</span> (cl <span class="cf">in</span> <span class="fu">names</span>(result<span class="sc">$</span>per_class_accuracy)) {</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  %s: %.1f%%</span><span class="sc">\n</span><span class="st">&quot;</span>, cl, result<span class="sc">$</span>per_class_accuracy[cl] <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<div id="roc-curves" class="section level3">
+<h3>ROC Curves</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Plot ROC and Precision-Recall curves</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">plot_roc</span>(result, <span class="at">plot_type =</span> <span class="st">&quot;both&quot;</span>, <span class="at">show_auc =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="confusion-matrix-heatmaps" class="section level3">
+<h3>Confusion Matrix Heatmaps</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># Raw confusion matrix</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;raw&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Raw Counts&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># R1-normalized </span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>, <span class="at">title =</span> <span class="st">&quot;R1 Normalized&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># R2-normalized</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">plot_confusion_heatmap</span>(result, <span class="at">normalized =</span> <span class="st">&quot;R2&quot;</span>, <span class="at">title =</span> <span class="st">&quot;R2 Normalized&quot;</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, p3, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="simulating-over-clustering" class="section level2">
+<h2>Simulating Over-Clustering</h2>
+<p>Now let’s create an over-clustered scenario to demonstrate
+optimization.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Split some clusters to simulate over-clustering</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>labels_over <span class="ot">&lt;-</span> labels</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># Split Cluster_1 into two</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Cluster_1&quot;</span>][<span class="dv">1</span><span class="sc">:</span><span class="dv">75</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Cluster_1a&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Cluster_1&quot;</span>][<span class="dv">76</span><span class="sc">:</span><span class="dv">150</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Cluster_1b&quot;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co"># Split Cluster_2 into two  </span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Cluster_2&quot;</span>][<span class="dv">1</span><span class="sc">:</span><span class="dv">75</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Cluster_2a&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>labels_over[labels <span class="sc">==</span> <span class="st">&quot;Cluster_2&quot;</span>][<span class="dv">76</span><span class="sc">:</span><span class="dv">150</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Cluster_2b&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>labels_over <span class="ot">&lt;-</span> <span class="fu">as.character</span>(labels_over)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Over-clustered labels:&quot;</span>, <span class="fu">unique</span>(labels_over), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Number of clusters:&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(labels_over)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div id="assessment-of-over-clustered-data" class="section level3">
+<h3>Assessment of Over-Clustered Data</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Assess the over-clustered data</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>result_over <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">labels =</span> labels_over,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">50</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">5</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Over-clustering accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, result_over<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Max R1 (indicates confusion):&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.4f&quot;</span>, result_over<span class="sc">$</span>max_r1), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Show confusion between artificial splits</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">plot_confusion_heatmap</span>(result_over, <span class="at">normalized =</span> <span class="st">&quot;R1&quot;</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                       <span class="at">title =</span> <span class="st">&quot;R1 Confusion (Over-clustered)&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="single-optimization-round" class="section level2">
+<h2>Single Optimization Round</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Run single optimization round</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>optim_round <span class="ot">&lt;-</span> <span class="fu">sc_optimize</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">labels =</span> labels_over,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">n_iter =</span> <span class="dv">3</span>,          <span class="co"># 3 iterations for confusion matrix</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="at">r1_cutoff =</span> <span class="fl">0.1</span>,     <span class="co"># Merge if R1 &gt; 0.1</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="at">r2_cutoff =</span> <span class="fl">0.05</span>,    <span class="co"># Or if R2 &gt; 0.05</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>)</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Clusters before:&quot;</span>, optim_round<span class="sc">$</span>n_clusters_before, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Clusters after:&quot;</span>, optim_round<span class="sc">$</span>n_clusters_after, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, optim_round<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="full-optimization-pipeline" class="section level2">
+<h2>Full Optimization Pipeline</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Run full optimization</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>optim_result <span class="ot">&lt;-</span> <span class="fu">sc_optimize_all</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">labels =</span> labels_over,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.90</span>,   <span class="co"># Target 90% accuracy</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">max_rounds =</span> <span class="dv">10</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">r1_cutoff =</span> <span class="fl">0.5</span>,       <span class="co"># Start with high cutoff</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">r2_cutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>)</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co"># Summary</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="fu">print</span>(optim_result)</span></code></pre></div>
+<div id="optimization-history" class="section level3">
+<h3>Optimization History</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Plot optimization progress</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">plot_optimization_history</span>(optim_result, <span class="at">metric =</span> <span class="st">&quot;both&quot;</span>)</span></code></pre></div>
+</div>
+<div id="compare-before-and-after" class="section level3">
+<h3>Compare Before and After</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Final cluster distribution</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Optimization Summary ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Initial clusters:&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(labels_over)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Final clusters:&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(optim_result<span class="sc">$</span>final_labels)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Final accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, optim_result<span class="sc">$</span>final_accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co"># Cluster mapping</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Final Cluster Sizes ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(optim_result<span class="sc">$</span>final_labels))</span></code></pre></div>
+</div>
+<div id="sankey-diagram" class="section level3">
+<h3>Sankey Diagram</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Visualize cluster reassignment</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;ggalluvial&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">plot_cluster_sankey</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="at">labels_from =</span> labels_over,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="at">labels_to =</span> <span class="fu">as.character</span>(optim_result<span class="sc">$</span>final_labels),</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Cluster Optimization Flow&quot;</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>  )</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="using-different-classifiers" class="section level2">
+<h2>Using Different Classifiers</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># List available classifiers</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">get_available_classifiers</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Try Random Forest</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>result_rf <span class="ot">&lt;-</span> <span class="fu">sc_assessment</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="at">X =</span> X,</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="at">labels =</span> labels,</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;RF&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">100</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">0</span>,  <span class="co"># Skip CV for speed</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>)</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Random Forest accuracy:&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%.1f%%&quot;</span>, result_rf<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>This quick start guide demonstrated:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Creating test data</strong> with known cluster
+structure</li>
+<li><strong>Running assessment</strong> with
+<code>sc_assessment()</code></li>
+<li><strong>Visualizing results</strong> with ROC curves and confusion
+matrices</li>
+<li><strong>Simulating over-clustering</strong> scenarios</li>
+<li><strong>Optimizing clustering</strong> with
+<code>sc_optimize_all()</code></li>
+<li><strong>Comparing classifiers</strong></li>
+</ol>
+<p>For more advanced usage, see the other vignettes:</p>
+<ul>
+<li><a href="algorithm.html">Algorithm Principles</a> - Mathematical
+foundations</li>
+<li><a href="seurat-integration.html">Seurat Integration</a> - Working
+with Seurat objects</li>
+<li><a href="visualization.html">Visualization Guide</a> - Comprehensive
+plotting</li>
+</ul>
+<hr />
+<p><strong>Author</strong>: Zaoqu Liu (<a href="mailto:liuzaoqu@163.com" class="email">liuzaoqu@163.com</a>)<br />
+<strong>Package</strong>: scClustEval v1.0.0</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Zaoqu Liu" />
+
+<meta name="date" content="2026-01-26" />
+
+<title>Seurat Integration</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Seurat Integration</h1>
+<h4 class="author">Zaoqu Liu</h4>
+<h4 class="date">2026-01-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview" id="toc-overview">Overview</a></li>
+<li><a href="#compatibility" id="toc-compatibility">Compatibility</a></li>
+<li><a href="#key-functions-for-seurat" id="toc-key-functions-for-seurat">Key Functions for Seurat</a></li>
+<li><a href="#basic-workflow" id="toc-basic-workflow">Basic
+Workflow</a></li>
+<li><a href="#clustering-optimization" id="toc-clustering-optimization">Clustering Optimization</a></li>
+<li><a href="#constrained-optimization" id="toc-constrained-optimization">Constrained Optimization</a></li>
+<li><a href="#adding-cluster-reliability-scores" id="toc-adding-cluster-reliability-scores">Adding Cluster Reliability
+Scores</a></li>
+<li><a href="#working-with-multiple-assays" id="toc-working-with-multiple-assays">Working with Multiple
+Assays</a></li>
+<li><a href="#seurat-v5-specific-notes" id="toc-seurat-v5-specific-notes">Seurat v5 Specific Notes</a></li>
+<li><a href="#complete-workflow-example" id="toc-complete-workflow-example">Complete Workflow Example</a></li>
+<li><a href="#troubleshooting" id="toc-troubleshooting">Troubleshooting</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</div>
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>scClustEval</strong> provides seamless integration with
+Seurat objects, the most widely used framework for single-cell RNA-seq
+analysis in R. This vignette demonstrates the Seurat-specific functions
+and workflows.</p>
+</div>
+<div id="compatibility" class="section level2">
+<h2>Compatibility</h2>
+<p>scClustEval is compatible with:</p>
+<ul>
+<li><strong>Seurat v4.x</strong>: Full support</li>
+<li><strong>Seurat v5.x</strong>: Full support with automatic layer
+handling</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(scClustEval)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+</div>
+<div id="key-functions-for-seurat" class="section level2">
+<h2>Key Functions for Seurat</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>RunAssessment()</code></td>
+<td>Assess clustering quality on Seurat object</td>
+</tr>
+<tr class="even">
+<td><code>RunOptimization()</code></td>
+<td>Optimize clustering iteratively</td>
+</tr>
+<tr class="odd">
+<td><code>AddClusterReliability()</code></td>
+<td>Add per-cluster reliability scores</td>
+</tr>
+<tr class="even">
+<td><code>GetExpressionMatrix()</code></td>
+<td>Extract expression data (V4/V5 compatible)</td>
+</tr>
+<tr class="odd">
+<td><code>QuickAssess()</code></td>
+<td>One-liner quick assessment</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="basic-workflow" class="section level2">
+<h2>Basic Workflow</h2>
+<div id="loading-a-seurat-object" class="section level3">
+<h3>Loading a Seurat Object</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Load your preprocessed Seurat object</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Assuming standard preprocessing: normalization, PCA, clustering</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;path/to/your/seurat_object.rds&quot;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Check available reductions and clusterings</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">Reductions</span>(seurat_obj))</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(seurat_obj<span class="sc">@</span>meta.data))</span></code></pre></div>
+</div>
+<div id="quick-assessment" class="section level3">
+<h3>Quick Assessment</h3>
+<p>For a rapid quality check, use <code>QuickAssess()</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Quick one-liner assessment</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">QuickAssess</span>(seurat_obj)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Output:</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Clustering Assessment</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># ---------------------</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Test Accuracy:  85.3%</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># CV Accuracy:    84.7%</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Max R1:         0.2341</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Clusters:       15</span></span></code></pre></div>
+</div>
+<div id="full-assessment" class="section level3">
+<h3>Full Assessment</h3>
+<p>For detailed analysis, use <code>RunAssessment()</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Run comprehensive assessment</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">object =</span> seurat_obj,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,  <span class="co"># Which clustering to assess</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>,                      <span class="co"># Use PCA embeddings</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>,                      <span class="co"># First 30 PCs</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,                <span class="co"># Logistic regression</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">penalty =</span> <span class="st">&quot;l1&quot;</span>,                   <span class="co"># L1 regularization</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">test_size =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">n_per_class =</span> <span class="dv">100</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">cv =</span> <span class="dv">5</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co"># View results</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="fu">print</span>(result)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># Plot ROC curves</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="fu">plot_roc</span>(result)</span></code></pre></div>
+</div>
+<div id="feature-space-options" class="section level3">
+<h3>Feature Space Options</h3>
+<p>The <code>use</code> parameter controls which feature space is
+used:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Option 1: PCA embeddings (recommended, default)</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>result_pca <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Option 2: Normalized expression data</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>result_data <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;data&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Option 3: Highly variable genes only</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>result_hvg <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;hvg&quot;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co"># Option 4: Scaled data</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>result_scaled <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;scale.data&quot;</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co"># Option 5: Other reductions (UMAP, Harmony, etc.)</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>result_harmony <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;harmony&quot;</span>, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="clustering-optimization" class="section level2">
+<h2>Clustering Optimization</h2>
+<div id="standard-optimization-workflow" class="section level3">
+<h3>Standard Optimization Workflow</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Step 1: Create over-clustered data</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">2.0</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>initial_clusters <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(<span class="fu">Idents</span>(seurat_obj)))</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Initial clusters:&quot;</span>, initial_clusters, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># Step 2: Run optimization</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunOptimization</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">object =</span> seurat_obj,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,     <span class="co"># Input clustering</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">result_col =</span> <span class="st">&quot;optimized_clusters&quot;</span>,   <span class="co"># Output column name</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">prefix =</span> <span class="st">&quot;scClustEval&quot;</span>,              <span class="co"># Prefix for intermediate columns</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">store_rounds =</span> <span class="cn">TRUE</span>,                 <span class="co"># Store intermediate results</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.90</span>,                 <span class="co"># Target 90% accuracy</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="at">max_rounds =</span> <span class="dv">10</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="at">classifier =</span> <span class="st">&quot;LR&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  <span class="at">r1_cutoff =</span> <span class="fl">0.5</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>  <span class="at">r2_cutoff =</span> <span class="fl">0.05</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">42</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>)</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co"># Step 3: Compare results</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>final_clusters <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(seurat_obj<span class="sc">$</span>optimized_clusters))</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Final clusters:&quot;</span>, final_clusters, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="visualizing-optimization-results" class="section level3">
+<h3>Visualizing Optimization Results</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Compare clusterings side-by-side</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="st">&quot;seurat_clusters&quot;</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Original (n =&quot;</span>, initial_clusters, <span class="st">&quot;)&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">NoLegend</span>()</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="st">&quot;optimized_clusters&quot;</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Optimized (n =&quot;</span>, final_clusters, <span class="st">&quot;)&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">NoLegend</span>()</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code></pre></div>
+</div>
+<div id="accessing-optimization-history" class="section level3">
+<h3>Accessing Optimization History</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Access stored optimization summary</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>optim_summary <span class="ot">&lt;-</span> seurat_obj<span class="sc">@</span>misc<span class="sc">$</span>scClustEval_optimization</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># View metrics</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Final accuracy:&quot;</span>, optim_summary<span class="sc">$</span>final_accuracy, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Total rounds:&quot;</span>, optim_summary<span class="sc">$</span>total_rounds, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Accuracy history:&quot;</span>, optim_summary<span class="sc">$</span>accuracy_history, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Cluster count history:&quot;</span>, optim_summary<span class="sc">$</span>n_clusters_history, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="constrained-optimization" class="section level2">
+<h2>Constrained Optimization</h2>
+<p>Use under-clustering as a constraint to prevent merging across
+biological boundaries:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Create low and high resolution clusterings</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">0.3</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>seurat_obj<span class="sc">$</span>low_res <span class="ot">&lt;-</span> <span class="fu">Idents</span>(seurat_obj)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">2.0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>seurat_obj<span class="sc">$</span>high_res <span class="ot">&lt;-</span> <span class="fu">Idents</span>(seurat_obj)</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># Optimize with constraint</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunOptimization</span>(</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;high_res&quot;</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  <span class="at">result_col =</span> <span class="st">&quot;constrained_clusters&quot;</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="at">under_cluster_col =</span> <span class="st">&quot;low_res&quot;</span>,  <span class="co"># Constraint: don&#39;t merge across these boundaries</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.95</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>)</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co"># Compare</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="fu">c</span>(<span class="st">&quot;low_res&quot;</span>, <span class="st">&quot;high_res&quot;</span>, <span class="st">&quot;constrained_clusters&quot;</span>), </span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>        <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">label =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="adding-cluster-reliability-scores" class="section level2">
+<h2>Adding Cluster Reliability Scores</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Run assessment first</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">cluster_col =</span> <span class="st">&quot;optimized_clusters&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Add per-cluster reliability to metadata</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">AddClusterReliability</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="at">result =</span> result,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;optimized_clusters&quot;</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="at">reliability_col =</span> <span class="st">&quot;cluster_reliability&quot;</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co"># Visualize reliability</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="fu">FeaturePlot</span>(seurat_obj, <span class="at">features =</span> <span class="st">&quot;cluster_reliability&quot;</span>, </span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>            <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">&quot;lightgray&quot;</span>, <span class="st">&quot;red&quot;</span>))</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co"># Or as a violin plot per cluster</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="fu">VlnPlot</span>(seurat_obj, <span class="at">features =</span> <span class="st">&quot;cluster_reliability&quot;</span>, </span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>        <span class="at">group.by =</span> <span class="st">&quot;optimized_clusters&quot;</span>, <span class="at">pt.size =</span> <span class="dv">0</span>)</span></code></pre></div>
+</div>
+<div id="working-with-multiple-assays" class="section level2">
+<h2>Working with Multiple Assays</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Assess using RNA assay</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>result_rna <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">&quot;RNA&quot;</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;data&quot;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co"># Assess using integrated assay (if available)</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&quot;integrated&quot;</span> <span class="sc">%in%</span> <span class="fu">Assays</span>(seurat_obj)) {</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  result_integrated <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>    seurat_obj,</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>    <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">&quot;integrated&quot;</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>    <span class="at">use =</span> <span class="st">&quot;pca&quot;</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  )</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="seurat-v5-specific-notes" class="section level2">
+<h2>Seurat v5 Specific Notes</h2>
+<p>For Seurat v5 with layers:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># scClustEval automatically handles V5 layer system</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># GetExpressionMatrix works for both V4 and V5</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Manual extraction if needed</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>expr_matrix <span class="ot">&lt;-</span> <span class="fu">GetExpressionMatrix</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">assay =</span> <span class="st">&quot;RNA&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">slot =</span> <span class="st">&quot;data&quot;</span>,       <span class="co"># &quot;counts&quot;, &quot;data&quot;, or &quot;scale.data&quot;</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">features =</span> <span class="cn">NULL</span>      <span class="co"># NULL = all features</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co"># Check dimensions</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="fu">dim</span>(expr_matrix)  <span class="co"># cells x features</span></span></code></pre></div>
+</div>
+<div id="complete-workflow-example" class="section level2">
+<h2>Complete Workflow Example</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># ================================================</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co"># Complete scClustEval Workflow with Seurat</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co"># ================================================</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co"># 1. Load and preprocess data</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;your_data.rds&quot;</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co"># 2. Initial assessment of default clustering</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;=== Initial Assessment ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>result_initial <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;seurat_clusters&quot;</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>)</span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Initial accuracy:&quot;</span>, <span class="fu">round</span>(result_initial<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co"># 3. Create over-clustered data</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">FindClusters</span>(seurat_obj, <span class="at">resolution =</span> <span class="fl">2.0</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>seurat_obj<span class="sc">$</span>overclustered <span class="ot">&lt;-</span> <span class="fu">Idents</span>(seurat_obj)</span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co"># 4. Optimize clustering</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">=== Optimization ===</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunOptimization</span>(</span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;overclustered&quot;</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a>  <span class="at">result_col =</span> <span class="st">&quot;final_clusters&quot;</span>,</span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a>  <span class="at">min_accuracy =</span> <span class="fl">0.90</span>,</span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a>  <span class="at">max_rounds =</span> <span class="dv">10</span>,</span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a>)</span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co"># 5. Final assessment</span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a>result_final <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(</span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a>  seurat_obj,</span>
+<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a>  <span class="at">cluster_col =</span> <span class="st">&quot;final_clusters&quot;</span>,</span>
+<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a>  <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>,</span>
+<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a>  <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>,</span>
+<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb13-41"><a href="#cb13-41" tabindex="-1"></a>)</span>
+<span id="cb13-42"><a href="#cb13-42" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Final accuracy:&quot;</span>, <span class="fu">round</span>(result_final<span class="sc">$</span>accuracy <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">&quot;%</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-43"><a href="#cb13-43" tabindex="-1"></a></span>
+<span id="cb13-44"><a href="#cb13-44" tabindex="-1"></a><span class="co"># 6. Add reliability scores</span></span>
+<span id="cb13-45"><a href="#cb13-45" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">AddClusterReliability</span>(seurat_obj, result_final, </span>
+<span id="cb13-46"><a href="#cb13-46" tabindex="-1"></a>                                    <span class="at">cluster_col =</span> <span class="st">&quot;final_clusters&quot;</span>)</span>
+<span id="cb13-47"><a href="#cb13-47" tabindex="-1"></a></span>
+<span id="cb13-48"><a href="#cb13-48" tabindex="-1"></a><span class="co"># 7. Visualize</span></span>
+<span id="cb13-49"><a href="#cb13-49" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="st">&quot;seurat_clusters&quot;</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> </span>
+<span id="cb13-50"><a href="#cb13-50" tabindex="-1"></a>  <span class="fu">NoLegend</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Original&quot;</span>)</span>
+<span id="cb13-51"><a href="#cb13-51" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">DimPlot</span>(seurat_obj, <span class="at">group.by =</span> <span class="st">&quot;final_clusters&quot;</span>, <span class="at">label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> </span>
+<span id="cb13-52"><a href="#cb13-52" tabindex="-1"></a>  <span class="fu">NoLegend</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Optimized&quot;</span>)</span>
+<span id="cb13-53"><a href="#cb13-53" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">FeaturePlot</span>(seurat_obj, <span class="at">features =</span> <span class="st">&quot;cluster_reliability&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb13-54"><a href="#cb13-54" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Reliability&quot;</span>)</span>
+<span id="cb13-55"><a href="#cb13-55" tabindex="-1"></a></span>
+<span id="cb13-56"><a href="#cb13-56" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> p3</span>
+<span id="cb13-57"><a href="#cb13-57" tabindex="-1"></a></span>
+<span id="cb13-58"><a href="#cb13-58" tabindex="-1"></a><span class="co"># 8. Save results</span></span>
+<span id="cb13-59"><a href="#cb13-59" tabindex="-1"></a><span class="fu">saveRDS</span>(seurat_obj, <span class="st">&quot;seurat_with_optimized_clusters.rds&quot;</span>)</span></code></pre></div>
+</div>
+<div id="troubleshooting" class="section level2">
+<h2>Troubleshooting</h2>
+<div id="common-issues" class="section level3">
+<h3>Common Issues</h3>
+<p><strong>Issue: “Reduction ‘pca’ not found”</strong></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Solution: Run PCA first</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>seurat_obj <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(seurat_obj, <span class="at">features =</span> <span class="fu">VariableFeatures</span>(seurat_obj))</span></code></pre></div>
+<p><strong>Issue: Small clusters produce warnings</strong></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># glmnet may warn about small clusters</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co"># This is normal for clusters with &lt; 8 cells</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># Consider filtering small clusters first</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>cluster_sizes <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="fu">Idents</span>(seurat_obj))</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>keep_cells <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">Idents</span>(seurat_obj))[<span class="fu">Idents</span>(seurat_obj) <span class="sc">%in%</span> <span class="fu">names</span>(cluster_sizes[cluster_sizes <span class="sc">&gt;=</span> <span class="dv">10</span>])]</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>seurat_subset <span class="ot">&lt;-</span> <span class="fu">subset</span>(seurat_obj, <span class="at">cells =</span> keep_cells)</span></code></pre></div>
+<p><strong>Issue: Memory issues with large datasets</strong></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Use PCA instead of full expression matrix</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">use =</span> <span class="st">&quot;pca&quot;</span>, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co"># Or subsample</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">RunAssessment</span>(seurat_obj, <span class="at">n_per_class =</span> <span class="dv">50</span>)  <span class="co"># Max 50 cells/cluster</span></span></code></pre></div>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>Key points for Seurat integration:</p>
+<ol style="list-style-type: decimal">
+<li>Use <code>RunAssessment()</code> for assessment,
+<code>RunOptimization()</code> for optimization</li>
+<li>Default feature space is PCA embeddings
+(<code>use = &quot;pca&quot;</code>)</li>
+<li>Results are stored in <code>@meta.data</code> and
+<code>@misc</code></li>
+<li>Both Seurat v4 and v5 are fully supported</li>
+<li>Use constrained optimization for biologically meaningful
+merging</li>
+</ol>
+<hr />
+<p><strong>Author</strong>: Zaoqu Liu (<a href="mailto:liuzaoqu@163.com" class="email">liuzaoqu@163.com</a>)<br />
+<strong>Package</strong>: scClustEval v1.0.0</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

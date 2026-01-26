@@ -1,0 +1,214 @@
+## ----setup, include = FALSE---------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE,
+  eval = FALSE
+)
+set.seed(42)
+
+## ----install, eval=FALSE------------------------------------------------------
+# # From R-universe (recommended)
+# install.packages("scClustEval", repos = "https://zaoqu-liu.r-universe.dev")
+# 
+# # From GitHub
+# remotes::install_github("Zaoqu-Liu/scClustEval")
+
+## ----load---------------------------------------------------------------------
+# library(scClustEval)
+# library(ggplot2)
+
+## ----create_data--------------------------------------------------------------
+# # Generate synthetic single-cell data
+# set.seed(42)
+# n_cells <- 600
+# n_features <- 50
+# n_clusters <- 4
+# 
+# # Create expression matrix with distinct clusters
+# X <- matrix(nrow = n_cells, ncol = n_features)
+# labels <- character(n_cells)
+# cells_per_cluster <- n_cells / n_clusters
+# 
+# for (i in 1:n_clusters) {
+#   start_idx <- (i - 1) * cells_per_cluster + 1
+#   end_idx <- i * cells_per_cluster
+# 
+#   # Each cluster has a distinct mean expression profile
+#   cluster_mean <- rnorm(n_features, mean = i * 2, sd = 0.5)
+#   X[start_idx:end_idx, ] <- matrix(
+#     rep(cluster_mean, cells_per_cluster) + rnorm(cells_per_cluster * n_features, sd = 1),
+#     nrow = cells_per_cluster,
+#     byrow = TRUE
+#   )
+#   labels[start_idx:end_idx] <- paste0("Cluster_", i)
+# }
+# 
+# colnames(X) <- paste0("Gene_", 1:n_features)
+# 
+# cat("Data dimensions:", nrow(X), "cells x", ncol(X), "features\n")
+# cat("Clusters:", unique(labels), "\n")
+
+## ----assessment---------------------------------------------------------------
+# # Run clustering assessment
+# result <- sc_assessment(
+#   X = X,
+#   labels = labels,
+#   classifier = "LR",    # Logistic Regression
+#   penalty = "l1",       # L1 regularization (Lasso)
+#   test_size = 0.5,      # 50% for testing
+#   n_per_class = 100,    # Max 100 cells per cluster in training
+#   cv = 5,               # 5-fold cross-validation
+#   seed = 42,
+#   verbose = TRUE
+# )
+# 
+# # View summary
+# print(result)
+
+## ----results_explain----------------------------------------------------------
+# # Key metrics
+# cat("\n=== Key Metrics ===\n")
+# cat("Test Accuracy:", sprintf("%.1f%%", result$accuracy * 100), "\n")
+# cat("CV Accuracy:", sprintf("%.1f%%", result$cv_accuracy * 100), "\n")
+# cat("Max R1 Confusion:", sprintf("%.4f", result$max_r1), "\n")
+# cat("Max R2 Confusion:", sprintf("%.4f", result$max_r2), "\n")
+# 
+# # Per-cluster accuracy
+# cat("\n=== Per-Cluster Accuracy ===\n")
+# for (cl in names(result$per_class_accuracy)) {
+#   cat(sprintf("  %s: %.1f%%\n", cl, result$per_class_accuracy[cl] * 100))
+# }
+
+## ----roc_curves, fig.height=5, fig.width=10-----------------------------------
+# # Plot ROC and Precision-Recall curves
+# plot_roc(result, plot_type = "both", show_auc = TRUE)
+
+## ----confusion_heatmaps, fig.height=5, fig.width=12---------------------------
+# library(gridExtra)
+# 
+# # Raw confusion matrix
+# p1 <- plot_confusion_heatmap(result, normalized = "raw", title = "Raw Counts")
+# 
+# # R1-normalized
+# p2 <- plot_confusion_heatmap(result, normalized = "R1", title = "R1 Normalized")
+# 
+# # R2-normalized
+# p3 <- plot_confusion_heatmap(result, normalized = "R2", title = "R2 Normalized")
+# 
+# grid.arrange(p1, p2, p3, ncol = 3)
+
+## ----overclustering-----------------------------------------------------------
+# # Split some clusters to simulate over-clustering
+# labels_over <- labels
+# # Split Cluster_1 into two
+# labels_over[labels == "Cluster_1"][1:75] <- "Cluster_1a"
+# labels_over[labels == "Cluster_1"][76:150] <- "Cluster_1b"
+# # Split Cluster_2 into two
+# labels_over[labels == "Cluster_2"][1:75] <- "Cluster_2a"
+# labels_over[labels == "Cluster_2"][76:150] <- "Cluster_2b"
+# 
+# labels_over <- as.character(labels_over)
+# cat("Over-clustered labels:", unique(labels_over), "\n")
+# cat("Number of clusters:", length(unique(labels_over)), "\n")
+
+## ----assess_over--------------------------------------------------------------
+# # Assess the over-clustered data
+# result_over <- sc_assessment(
+#   X = X,
+#   labels = labels_over,
+#   classifier = "LR",
+#   n_per_class = 50,
+#   cv = 5,
+#   seed = 42,
+#   verbose = TRUE
+# )
+# 
+# cat("\nOver-clustering accuracy:", sprintf("%.1f%%", result_over$accuracy * 100), "\n")
+# cat("Max R1 (indicates confusion):", sprintf("%.4f", result_over$max_r1), "\n")
+
+## ----confusion_over, fig.height=5---------------------------------------------
+# # Show confusion between artificial splits
+# plot_confusion_heatmap(result_over, normalized = "R1",
+#                        title = "R1 Confusion (Over-clustered)")
+
+## ----optimize_single----------------------------------------------------------
+# # Run single optimization round
+# optim_round <- sc_optimize(
+#   X = X,
+#   labels = labels_over,
+#   classifier = "LR",
+#   n_iter = 3,          # 3 iterations for confusion matrix
+#   r1_cutoff = 0.1,     # Merge if R1 > 0.1
+#   r2_cutoff = 0.05,    # Or if R2 > 0.05
+#   seed = 42,
+#   verbose = TRUE
+# )
+# 
+# cat("\nClusters before:", optim_round$n_clusters_before, "\n")
+# cat("Clusters after:", optim_round$n_clusters_after, "\n")
+# cat("Accuracy:", sprintf("%.1f%%", optim_round$accuracy * 100), "\n")
+
+## ----optimize_full------------------------------------------------------------
+# # Run full optimization
+# optim_result <- sc_optimize_all(
+#   X = X,
+#   labels = labels_over,
+#   min_accuracy = 0.90,   # Target 90% accuracy
+#   max_rounds = 10,
+#   classifier = "LR",
+#   r1_cutoff = 0.5,       # Start with high cutoff
+#   r2_cutoff = 0.05,
+#   seed = 42,
+#   verbose = TRUE
+# )
+# 
+# # Summary
+# print(optim_result)
+
+## ----optim_history, fig.height=5----------------------------------------------
+# # Plot optimization progress
+# plot_optimization_history(optim_result, metric = "both")
+
+## ----compare_results----------------------------------------------------------
+# # Final cluster distribution
+# cat("\n=== Optimization Summary ===\n")
+# cat("Initial clusters:", length(unique(labels_over)), "\n")
+# cat("Final clusters:", length(unique(optim_result$final_labels)), "\n")
+# cat("Final accuracy:", sprintf("%.1f%%", optim_result$final_accuracy * 100), "\n")
+# 
+# # Cluster mapping
+# cat("\n=== Final Cluster Sizes ===\n")
+# print(table(optim_result$final_labels))
+
+## ----sankey, fig.height=6, eval=FALSE-----------------------------------------
+# # Visualize cluster reassignment
+# if (requireNamespace("ggalluvial", quietly = TRUE)) {
+#   plot_cluster_sankey(
+#     labels_from = labels_over,
+#     labels_to = as.character(optim_result$final_labels),
+#     title = "Cluster Optimization Flow"
+#   )
+# }
+
+## ----classifiers_compare------------------------------------------------------
+# # List available classifiers
+# get_available_classifiers()
+
+## ----rf_example---------------------------------------------------------------
+# # Try Random Forest
+# result_rf <- sc_assessment(
+#   X = X,
+#   labels = labels,
+#   classifier = "RF",
+#   n_per_class = 100,
+#   cv = 0,  # Skip CV for speed
+#   seed = 42,
+#   verbose = FALSE
+# )
+# 
+# cat("Random Forest accuracy:", sprintf("%.1f%%", result_rf$accuracy * 100), "\n")
+
