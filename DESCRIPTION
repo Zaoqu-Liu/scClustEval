@@ -30,8 +30,6 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.0.0)
 Imports:
-    Seurat (>= 4.0.0),
-    SeuratObject,
     Matrix,
     Rcpp (>= 1.0.0),
     glmnet,
@@ -47,6 +45,8 @@ Imports:
     future,
     rlang
 Suggests:
+    Seurat,
+    SeuratObject,
     randomForest,
     ranger,
     e1071,

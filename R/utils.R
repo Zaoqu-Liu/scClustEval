@@ -3,6 +3,24 @@
 #' @name utils
 NULL
 
+#' @title Check Seurat availability
+#' @description Internal function to check if Seurat package is available
+#' @keywords internal
+.check_seurat <- function() {
+    if (!requireNamespace("Seurat", quietly = TRUE)) {
+        stop("Package 'Seurat' is required for this function but not installed.\n",
+             "Install with: install.packages('Seurat')\n",
+             "Note: scClustEval does NOT auto-install Seurat to avoid version conflicts.",
+             call. = FALSE)
+    }
+    if (!requireNamespace("SeuratObject", quietly = TRUE)) {
+        stop("Package 'SeuratObject' is required for this function but not installed.\n",
+             "Install with: install.packages('SeuratObject')",
+             call. = FALSE)
+    }
+    TRUE
+}
+
 #' @title Make unique names
 #' @description Make a name vector unique by adding suffix "_n"
 #'
