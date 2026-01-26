@@ -7,6 +7,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
+📖 **Documentation**: [https://zaoqu-liu.github.io/scClustEval/](https://zaoqu-liu.github.io/scClustEval/)
+
 ## Single Cell Clustering Evaluation and Optimization Framework
 
 **scClustEval** is a comprehensive R package designed for rigorous evaluation and iterative optimization of cell clustering in single-cell RNA sequencing (scRNA-seq) data. The package implements a self-projection machine learning framework that systematically assesses clustering reliability and identifies biologically indistinguishable cell populations for potential merging.
@@ -273,6 +275,7 @@ Please also cite the original SCCAF methodology:
 - **Publication**: [Miao et al., 2020, *Nature Methods*](https://doi.org/10.1038/s41592-020-0825-9)
 
 ---
+
 ## Contact
 
 - **Author**: Zaoqu Liu

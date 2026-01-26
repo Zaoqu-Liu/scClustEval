@@ -28,8 +28,7 @@ scClustEval.Rcheck/
 .DS_Store
 Thumbs.db
 
-# Documentation
-docs/
+# Documentation (keep docs/ for GitHub Pages)
 pkgdown/
 
 # Test artifacts

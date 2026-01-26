@@ -1,0 +1,13 @@
+pandoc: 3.7.0.1
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  algorithm: algorithm.html
+  introduction: introduction.html
+  quick-start: quick-start.html
+  seurat-integration: seurat-integration.html
+  visualization: visualization.html
+last_built: 2026-01-26T02:39Z
+urls:
+  reference: https://zaoqu-liu.github.io/scClustEval/reference
+  article: https://zaoqu-liu.github.io/scClustEval/articles

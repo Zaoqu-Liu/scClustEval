@@ -1,0 +1,166 @@
+url: https://zaoqu-liu.github.io/scClustEval/
+
+home:
+  title: scClustEval - Single Cell Clustering Evaluation
+
+authors:
+  Zaoqu Liu:
+    href: https://github.com/Zaoqu-Liu
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#0d6efd"
+    base_font: {google: "Roboto"}
+    heading_font: {google: "Roboto Slab"}
+    code_font: {google: "JetBrains Mono"}
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    intro:
+      text: Get Started
+      href: articles/quick-start.html
+    articles:
+      text: Vignettes
+      menu:
+        - text: Quick Start Guide
+          href: articles/quick-start.html
+        - text: Algorithm Principles
+          href: articles/algorithm.html
+        - text: Visualization Guide
+          href: articles/visualization.html
+        - text: Seurat Integration
+          href: articles/seurat-integration.html
+        - text: "---"
+        - text: Introduction (Legacy)
+          href: articles/introduction.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/Zaoqu-Liu/scClustEval
+      aria-label: GitHub
+
+reference:
+  - title: "Assessment Functions"
+    desc: Functions for clustering quality assessment
+    contents:
+      - sc_assessment
+      - self_projection
+      - SCCAF_assessment
+      - RunAssessment
+      - QuickAssess
+      - assessment
+
+  - title: "Optimization Functions"
+    desc: Functions for clustering optimization
+    contents:
+      - sc_optimize
+      - sc_optimize_all
+      - SCCAF_optimize
+      - SCCAF_optimize_all
+      - RunOptimization
+      - optimization
+
+  - title: "Classifiers"
+    desc: Machine learning classifier interface
+    contents:
+      - create_classifier
+      - get_available_classifiers
+      - classifiers
+      - print.scClustEval_classifier
+
+  - title: "Confusion Matrix"
+    desc: Confusion matrix computation and normalization
+    contents:
+      - calc_confusion_matrix
+      - normalize_confusion_matrix
+      - normalize_confmat_r1
+      - normalize_confmat_r2
+      - per_cluster_accuracy
+      - per_cell_accuracy
+      - confusion_matrix
+
+  - title: "Clustering Utilities"
+    desc: Graph-based clustering and cluster manipulation
+    contents:
+      - cluster_adjacency_matrix
+      - merge_clusters
+      - get_connection_matrix
+      - clustering
+
+  - title: "Distance Functions"
+    desc: Distance calculations
+    contents:
+      - get_distance_matrix
+      - bhattacharyya_distance
+      - bhattacharyya_matrix
+
+  - title: "Visualization"
+    desc: Plotting functions
+    contents:
+      - plot_roc
+      - plot_confusion_heatmap
+      - plot_assessment_summary
+      - plot_optimization_history
+      - plot_cluster_sankey
+      - plot.scClustEval
+      - visualization
+
+  - title: "Seurat Integration"
+    desc: Functions for Seurat object compatibility
+    contents:
+      - AddClusterReliability
+      - GetExpressionMatrix
+      - seurat_integration
+
+  - title: "Utilities"
+    desc: Helper functions
+    contents:
+      - train_test_split
+      - train_test_split_stratified
+      - make_unique_names
+      - get_top_markers
+      - utils
+
+  - title: "S3 Methods"
+    desc: Print and summary methods
+    contents:
+      - print.scClustEval
+      - print.scClustEval_optim
+      - summary.scClustEval
+      - summary.scClustEval_optim
+
+  - title: "Package Documentation"
+    desc: Package overview
+    contents:
+      - scClustEval-package
+      - zzz
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - quick-start
+      - seurat-integration
+      
+  - title: In Depth
+    contents:
+      - algorithm
+      - visualization
+      
+  - title: Additional
+    contents:
+      - introduction
+
+news:
+  releases:
+    - text: "Version 1.0.0"
+      href: news/index.html
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
