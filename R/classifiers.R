@@ -217,13 +217,13 @@ create_classifier <- function(type = "LR",
         },
 
         get_importance = function() {
-            coefs <- tryCatch({
-                coef_list <- .self$get_coefficients()
-                # Sum absolute values across classes
-                coef_mat <- do.call(cbind, lapply(coef_list, function(x) as.vector(x[-1])))
-                rowSums(abs(coef_mat))
-            }, error = function(e) NULL)
-            return(coefs)
+            if (is.null(model)) stop("Model not trained. Call fit() first.")
+            s_val <- if (inherits(model, "cv.glmnet")) "lambda.min" else model$lambda[1]
+            coef_list <- coef(model, s = s_val)
+            # Sum absolute values across classes
+            coef_mat <- do.call(cbind, lapply(coef_list, function(x) as.vector(x[-1])))
+            importance <- rowSums(abs(coef_mat))
+            return(importance)
         },
 
         get_classes = function() {
@@ -532,7 +532,13 @@ create_classifier <- function(type = "LR",
 
         predict = function(X) {
             if (is.null(model)) stop("Model not trained. Call fit() first.")
-            probs <- .self$predict_prob(X)
+
+            if (inherits(X, "Matrix")) {
+                X <- as(X, "dgCMatrix")
+            }
+
+            dtest <- xgboost::xgb.DMatrix(data = X)
+            probs <- predict(model, dtest, reshape = TRUE)
             pred_idx <- apply(probs, 1, which.max)
             return(classes[pred_idx])
         },
@@ -602,7 +608,10 @@ create_classifier <- function(type = "LR",
 
         predict = function(X) {
             if (is.null(model)) stop("Model not trained. Call fit() first.")
-            probs <- .self$predict_prob(X)
+            if (inherits(X, "Matrix")) X <- as.matrix(X)
+            df <- as.data.frame(X)
+            pred <- predict(model, data = df)
+            probs <- pred$predictions
             pred_idx <- apply(probs, 1, which.max)
             return(classes[pred_idx])
         },

@@ -192,10 +192,13 @@ self_projection <- function(X,
 }
 
 #' @title SCCAF Assessment
-#' @description Alias for self_projection for compatibility
+#' @description Alias for self_projection for compatibility with SCCAF Python package
 #'
-#' @inheritParams self_projection
+#' @param ... Arguments passed to \code{\link{self_projection}}
+#'
 #' @inherit self_projection return
+#'
+#' @seealso \code{\link{self_projection}}
 #'
 #' @export
 SCCAF_assessment <- function(...) {

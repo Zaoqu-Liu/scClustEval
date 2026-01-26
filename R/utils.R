@@ -143,43 +143,28 @@ train_test_split <- train_test_split_stratified
     assay_obj <- object[[assay]]
 
     # Extract data based on slot
-    if (slot == "data") {
+    # Use GetAssayData which works for both V4 and V5
+    mat <- tryCatch({
+        SeuratObject::GetAssayData(object, slot = slot, assay = assay)
+    }, error = function(e) {
+        # Fallback for V5 layer-based access
         if (seurat_version >= "5.0.0") {
-            # Seurat V5: use LayerData if available
-            if (requireNamespace("SeuratObject", quietly = TRUE) &&
-                exists("LayerData", where = asNamespace("SeuratObject"))) {
-                mat <- tryCatch(
-                    SeuratObject::LayerData(assay_obj, layer = "data"),
-                    error = function(e) SeuratObject::GetAssayData(object, slot = "data", assay = assay)
-                )
-            } else {
-                mat <- SeuratObject::GetAssayData(object, slot = "data", assay = assay)
-            }
+            layer_name <- switch(slot,
+                                 "data" = "data",
+                                 "counts" = "counts",
+                                 "scale.data" = "scale.data",
+                                 slot)
+            # Try using Seurat's FetchData or direct access
+            tryCatch({
+                assay_obj[[layer_name]]
+            }, error = function(e2) {
+                stop(sprintf("Cannot extract %s slot from assay %s: %s",
+                             slot, assay, e$message))
+            })
         } else {
-            # Seurat V4
-            mat <- SeuratObject::GetAssayData(object, slot = "data", assay = assay)
+            stop(sprintf("Cannot extract %s slot: %s", slot, e$message))
         }
-    } else if (slot == "counts") {
-        if (seurat_version >= "5.0.0") {
-            mat <- tryCatch(
-                SeuratObject::LayerData(assay_obj, layer = "counts"),
-                error = function(e) SeuratObject::GetAssayData(object, slot = "counts", assay = assay)
-            )
-        } else {
-            mat <- SeuratObject::GetAssayData(object, slot = "counts", assay = assay)
-        }
-    } else if (slot == "scale.data") {
-        if (seurat_version >= "5.0.0") {
-            mat <- tryCatch(
-                SeuratObject::LayerData(assay_obj, layer = "scale.data"),
-                error = function(e) SeuratObject::GetAssayData(object, slot = "scale.data", assay = assay)
-            )
-        } else {
-            mat <- SeuratObject::GetAssayData(object, slot = "scale.data", assay = assay)
-        }
-    } else {
-        stop("slot must be one of: 'data', 'counts', 'scale.data'")
-    }
+    })
 
     # Transpose to cells x features
     mat <- Matrix::t(mat)

@@ -11,13 +11,12 @@ Authors@R: c(
     person("Chichau", "Miau", 
            role = "ctb",
            comment = "Original SCCAF Python implementation"))
-Description: A comprehensive framework for evaluating and optimizing single-cell 
-    RNA-seq clustering results using self-projection machine learning approaches. 
-
-    The package implements an iterative optimization strategy that merges poorly 
-    discriminated clusters based on confusion matrix analysis, achieving robust 
-    and reliable cell type identification. Features include multiple classifier 
-    support (logistic regression, random forest, SVM, etc.), ROC curve analysis, 
+Description: A comprehensive framework for evaluating and optimizing single-cell
+    RNA-seq clustering results using self-projection machine learning approaches.
+    The package implements an iterative optimization strategy that merges poorly
+    discriminated clusters based on confusion matrix analysis, achieving robust
+    and reliable cell type identification. Features include multiple classifier
+    support (logistic regression, random forest, SVM, etc.), ROC curve analysis,
     confusion matrix visualization, and seamless integration with Seurat objects.
     This is an R implementation inspired by the SCCAF Python package.
 License: MIT + file LICENSE
@@ -26,7 +25,7 @@ BugReports: https://github.com/Zaoqu-Liu/scClustEval/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends:
     R (>= 4.0.0)
 Imports:
@@ -36,6 +35,7 @@ Imports:
     Rcpp (>= 1.0.0),
     glmnet,
     caret,
+    rpart,
     igraph,
     pROC,
     ggplot2,
@@ -44,17 +44,14 @@ Imports:
     utils,
     parallel,
     future,
-    future.apply,
-    data.table,
-    dplyr,
-    tibble,
-    scales,
     rlang
 Suggests:
     randomForest,
     ranger,
     e1071,
     xgboost,
+    leiden,
+    patchwork,
     ComplexHeatmap,
     pheatmap,
     ggalluvial,

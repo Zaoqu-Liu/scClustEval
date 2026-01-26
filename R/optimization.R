@@ -297,11 +297,11 @@ sc_optimize_all <- function(X,
     outer_iter <- 0
 
     if (verbose) {
-        .log_message("=" %>% rep(60) %>% paste(collapse = ""))
-        .log_message(sprintf("Starting SCCAF optimization"))
+        .log_message(paste(rep("=", 60), collapse = ""))
+        .log_message("Starting clustering optimization")
         .log_message(sprintf("Initial clusters: %d", n_initial_clusters))
         .log_message(sprintf("Target accuracy: %.2f%%", min_accuracy * 100))
-        .log_message("=" %>% rep(60) %>% paste(collapse = ""))
+        .log_message(paste(rep("=", 60), collapse = ""))
     }
 
     # Outer optimization loop
@@ -426,14 +426,14 @@ sc_optimize_all <- function(X,
 
     # Summary
     if (verbose) {
-        .log_message("\n" %>% paste(rep("=", 60), collapse = ""))
+        .log_message(paste(rep("=", 60), collapse = ""))
         .log_message("Optimization complete")
         .log_message(sprintf("Final accuracy: %.4f (%.1f%%)",
                              current_accuracy, current_accuracy * 100))
         .log_message(sprintf("Clusters: %d -> %d",
                              n_initial_clusters, length(unique(final_labels))))
         .log_message(sprintf("Total rounds: %d", total_rounds))
-        .log_message("=" %>% rep(60) %>% paste(collapse = ""))
+        .log_message(paste(rep("=", 60), collapse = ""))
     }
 
     # Return results

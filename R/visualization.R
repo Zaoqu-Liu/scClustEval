@@ -1,7 +1,12 @@
 #' @title Visualization Functions for scClustEval
 #' @description Functions for plotting assessment and optimization results
 #' @name visualization
+#'
+#' @importFrom rlang .data
 NULL
+
+# Global variable declaration to avoid R CMD check notes
+utils::globalVariables(c("stratum"))
 
 #' @title Plot ROC curves
 #' @description Plot ROC and Precision-Recall curves for assessment results
@@ -459,9 +464,9 @@ plot_cluster_sankey <- function(labels_from,
                     axis2 = .data$To)) +
         ggalluvial::geom_alluvium(aes(fill = .data$From), alpha = alpha) +
         ggalluvial::geom_stratum(width = 0.3, fill = "gray90", color = "gray50") +
-        ggalluvial::geom_text(stat = "stratum",
-                              aes(label = after_stat(stratum)),
-                              size = 3) +
+        geom_text(stat = ggalluvial::StatStratum,
+                  aes(label = after_stat(stratum)),
+                  size = 3) +
         scale_x_discrete(limits = c("From", "To"), expand = c(0.15, 0.05)) +
         scale_fill_manual(values = colors) +
         labs(title = title, y = "Cell Count") +

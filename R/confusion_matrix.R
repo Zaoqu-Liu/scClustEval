@@ -38,19 +38,36 @@ calc_confusion_matrix <- function(y_true, y_pred, labels = NULL) {
 }
 
 #' @title Normalize confusion matrix (R1 norm)
-#' @description Normalize confusion matrix based on total cells per class
+#' @description Normalize confusion matrix relative to correctly classified cells
 #'
 #' @details
-#' For each pair (i, j), compute the maximum of:
-#' - cmat[i, j] / diag[j] (fraction of j predicted as i)
-#' - cmat[j, i] / diag[i] (fraction of i predicted as j)
+#' R1 normalization measures the confusion rate between cluster pairs
+#' relative to the number of correctly classified cells.
 #'
-#' This captures the maximum confusion rate between any two clusters.
+#' For each pair (i, j), compute:
+#' \deqn{R1(i,j) = \max\left(\frac{C_{ij}}{C_{jj}}, \frac{C_{ji}}{C_{ii}}\right)}
 #'
-#' @param cmat Confusion matrix (from calc_confusion_matrix)
-#' @param mode Normalization mode: "1" or "2" (default: "1")
+#' where:
+#' \itemize{
+#'   \item \eqn{C_{ij}} = cells truly in cluster i but predicted as cluster j
+#'   \item \eqn{C_{jj}} = cells truly in cluster j and correctly predicted (diagonal)
+#' }
 #'
-#' @return Normalized symmetric confusion matrix
+#' The ratio \eqn{C_{ij}/C_{jj}} represents how many cells from cluster i
+#' are misclassified as j, relative to the correctly classified cells in j.
+#' A high R1 value indicates substantial confusion between the cluster pair.
+#'
+#' @param cmat Confusion matrix (from calc_confusion_matrix).
+#'   Rows represent true labels, columns represent predicted labels.
+#' @param mode Normalization mode: "1" (default, as in SCCAF) or "2"
+#'
+#' @return Symmetric matrix of pairwise R1-normalized confusion values.
+#'   Values typically range from 0 to >1 (can exceed 1 when misclassifications
+#'   outnumber correct classifications).
+#'
+#' @references
+#' Miao, Z., et al. (2020). Putative cell type discovery from single-cell
+#' gene expression data. Nature Methods.
 #'
 #' @examples
 #' cmat <- matrix(c(90, 5, 5, 3, 85, 12, 2, 10, 88), nrow = 3)
@@ -90,18 +107,35 @@ normalize_confmat_r1 <- function(cmat, mode = "1") {
 }
 
 #' @title Normalize confusion matrix (R2 norm)
-#' @description Normalize confusion matrix based on total cell count
+#' @description Normalize confusion matrix relative to total cell count
 #'
 #' @details
+#' R2 normalization measures the overall impact of confusion between
+#' cluster pairs on the entire dataset.
+#'
 #' For each pair (i, j), compute:
-#' (cmat[i, j] + cmat[j, i]) / N
+#' \deqn{R2(i,j) = \frac{C_{ij} + C_{ji}}{N}}
 #'
-#' where N is the total number of cells. This gives the fraction of
-#' total cells that are confused between clusters i and j.
+#' where:
+#' \itemize{
+#'   \item \eqn{C_{ij}} = cells truly in cluster i but predicted as cluster j
+#'   \item \eqn{C_{ji}} = cells truly in cluster j but predicted as cluster i
+#'   \item \eqn{N} = total number of cells in the test set
+#' }
 #'
-#' @param cmat Confusion matrix (from calc_confusion_matrix)
+#' This gives the fraction of total cells that are confused between
+#' clusters i and j. Unlike R1, R2 values are always between 0 and 1.
 #'
-#' @return Normalized symmetric confusion matrix
+#' @param cmat Confusion matrix (from calc_confusion_matrix).
+#'   Rows represent true labels, columns represent predicted labels.
+#'
+#' @return Symmetric matrix of pairwise R2-normalized confusion values.
+#'   Values range from 0 to 1, representing the fraction of total cells
+#'   misclassified between each cluster pair.
+#'
+#' @references
+#' Miao, Z., et al. (2020). Putative cell type discovery from single-cell
+#' gene expression data. Nature Methods.
 #'
 #' @examples
 #' cmat <- matrix(c(90, 5, 5, 3, 85, 12, 2, 10, 88), nrow = 3)
