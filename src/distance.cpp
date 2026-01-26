@@ -107,7 +107,7 @@ arma::mat compute_centroids_cpp(const arma::mat& X,
 //' Compute cosine similarity matrix (C++ version)
 //'
 //' @param X Numeric matrix (rows = samples, cols = features)
-//' @return Similarity matrix (values in [-1, 1])
+//' @return Similarity matrix with values between -1 and 1
 //'
 //' @keywords internal
 // [[Rcpp::export]]

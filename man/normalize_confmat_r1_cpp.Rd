@@ -13,6 +13,6 @@ normalize_confmat_r1_cpp(cmat)
 R1-normalized confusion matrix
 }
 \description{
-For each pair (i, j), compute the maximum confusion ratio.
+Computes the maximum confusion ratio for each cluster pair.
 }
 \keyword{internal}

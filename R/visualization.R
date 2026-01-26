@@ -98,6 +98,12 @@ plot_roc <- function(result,
             fp_cumsum <- cumsum(1 - y_sorted)
             total_positives <- sum(y_binary)
 
+            # Handle edge case: no positive samples
+            if (total_positives == 0) {
+                warning(sprintf("No positive samples for class %s, skipping PRC", cl))
+                next
+            }
+
             precision <- tp_cumsum / (tp_cumsum + fp_cumsum)
             recall <- tp_cumsum / total_positives
 

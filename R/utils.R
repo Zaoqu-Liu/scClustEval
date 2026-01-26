@@ -87,14 +87,9 @@ train_test_split_stratified <- function(X, y,
 
     test_idx <- setdiff(seq_len(n_total), train_idx)
 
-    # Handle Matrix and matrix types
-    if (inherits(X, "Matrix") || inherits(X, "dgCMatrix")) {
-        X_train <- X[train_idx, , drop = FALSE]
-        X_test <- X[test_idx, , drop = FALSE]
-    } else {
-        X_train <- X[train_idx, , drop = FALSE]
-        X_test <- X[test_idx, , drop = FALSE]
-    }
+    # Subset data (works for both sparse and dense matrices)
+    X_train <- X[train_idx, , drop = FALSE]
+    X_test <- X[test_idx, , drop = FALSE]
 
     list(
         X_train = X_train,
@@ -269,8 +264,7 @@ train_test_split <- train_test_split_stratified
     n_elements <- nrow(mat) * ncol(mat)
     if (n_elements > threshold) {
         warning(sprintf(
-            "Converting large sparse matrix (%d x %d = %.1e elements) to dense. ",
-            "This may use significant memory.",
+            "Converting large sparse matrix (%d x %d = %.1e elements) to dense. This may use significant memory.",
             nrow(mat), ncol(mat), n_elements
         ))
     }

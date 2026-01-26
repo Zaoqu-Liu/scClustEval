@@ -621,7 +621,12 @@ create_classifier <- function(type = "LR",
             if (inherits(X, "Matrix")) X <- as.matrix(X)
             df <- as.data.frame(X)
             pred <- predict(model, data = df)
-            return(pred$predictions)
+            probs <- pred$predictions
+            # Ensure column names match classes
+            if (is.null(colnames(probs))) {
+                colnames(probs) <- classes
+            }
+            return(probs)
         },
 
         get_coefficients = function() {

@@ -97,10 +97,6 @@ merge_clusters <- function(labels, groups, label_map = NULL) {
     # Apply mapping
     new_labels <- label_map[labels]
 
-    # Make unique names if there are duplicates
-    new_labels <- make_unique_names(new_labels)
-    new_labels <- gsub("_\\d+$", "", new_labels)  # Remove suffix to get clean group labels
-
     return(factor(new_labels))
 }
 
@@ -172,21 +168,34 @@ get_connection_matrix <- function(labels1, labels2, min_percent = 0.1) {
 #'
 #' @export
 bhattacharyya_distance <- function(p, q) {
-    # Ensure non-negative and sum to 1
+    # Handle zero-sum vectors
+    p_sum <- sum(p)
+    q_sum <- sum(q)
+    
+    if (p_sum == 0 || q_sum == 0) {
+        warning("One of the distributions has zero sum")
+        return(Inf)
+    }
+    
+    # Ensure non-negative and normalize to sum to 1
     p <- pmax(p, 0)
     q <- pmax(q, 0)
 
-    p <- p / sum(p)
-    q <- q / sum(q)
+    p <- p / p_sum
+    q <- q / q_sum
 
-    # Calculate Bhattacharyya coefficient
+    # Calculate Bhattacharyya coefficient: BC = sum(sqrt(p_i * q_i))
+    # BC = 1 when distributions are identical
+    # BC = 0 when distributions have no overlap
     bc <- sum(sqrt(p * q))
 
-    # Calculate distance
+    # Calculate distance: D = -log(BC)
+    # D = 0 when BC = 1 (identical)
+    # D = Inf when BC = 0 (no overlap)
     dist <- -log(bc)
 
-    # Handle edge cases
-    if (is.nan(dist) || is.infinite(dist)) {
+    # Handle NaN (shouldn't happen with proper input)
+    if (is.nan(dist)) {
         return(0)
     }
 

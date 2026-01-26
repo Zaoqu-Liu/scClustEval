@@ -400,12 +400,16 @@ sc_optimize_all <- function(X,
             break
         }
 
-        if (n_current >= length(unique(round_history[[max(1, length(round_history) - 1)]]$new_labels)) &&
-            outer_iter >= min_outer_iter) {
-            if (verbose) {
-                .log_message("Converged: cluster count not decreasing")
+        # Check if cluster count is not decreasing across outer iterations
+        # Compare with the last round's cluster count
+        if (length(round_history) > 0) {
+            last_n_clusters <- round_history[[length(round_history)]]$n_clusters_after
+            if (n_current >= last_n_clusters && outer_iter >= min_outer_iter) {
+                if (verbose) {
+                    .log_message("Converged: cluster count not decreasing")
+                }
+                break
             }
-            break
         }
 
         # Update cutoffs for next outer iteration

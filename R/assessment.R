@@ -277,14 +277,9 @@ sc_assessment <- function(X,
         test_idx <- folds[[i]]
         train_idx <- setdiff(seq_len(n), test_idx)
 
-        # Handle sparse matrices
-        if (inherits(X, "Matrix")) {
-            X_train_cv <- X[train_idx, , drop = FALSE]
-            X_test_cv <- X[test_idx, , drop = FALSE]
-        } else {
-            X_train_cv <- X[train_idx, , drop = FALSE]
-            X_test_cv <- X[test_idx, , drop = FALSE]
-        }
+        # Subset data (works for both sparse and dense matrices)
+        X_train_cv <- X[train_idx, , drop = FALSE]
+        X_test_cv <- X[test_idx, , drop = FALSE]
 
         y_train_cv <- y[train_idx]
         y_test_cv <- y[test_idx]

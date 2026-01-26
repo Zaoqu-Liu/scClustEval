@@ -13,6 +13,6 @@ normalize_confmat_r2_cpp(cmat)
 R2-normalized confusion matrix
 }
 \description{
-For each pair, compute the sum of bidirectional confusions divided by total.
+Computes the sum of bidirectional confusions divided by total count.
 }
 \keyword{internal}

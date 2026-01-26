@@ -15,7 +15,7 @@ confusion_matrix_cpp <- function(y_true, y_pred, n_classes) {
 
 #' R1 normalize confusion matrix (C++ version)
 #'
-#' For each pair (i, j), compute the maximum confusion ratio.
+#' Computes the maximum confusion ratio for each cluster pair.
 #'
 #' @param cmat Confusion matrix
 #' @return R1-normalized confusion matrix
@@ -27,7 +27,7 @@ normalize_confmat_r1_cpp <- function(cmat) {
 
 #' R2 normalize confusion matrix (C++ version)
 #'
-#' For each pair, compute the sum of bidirectional confusions divided by total.
+#' Computes the sum of bidirectional confusions divided by total count.
 #'
 #' @param cmat Confusion matrix
 #' @return R2-normalized confusion matrix
@@ -104,7 +104,7 @@ compute_centroids_cpp <- function(X, labels, n_clusters) {
 #' Compute cosine similarity matrix (C++ version)
 #'
 #' @param X Numeric matrix (rows = samples, cols = features)
-#' @return Similarity matrix (values between -1 and 1)
+#' @return Similarity matrix with values between -1 and 1
 #'
 #' @keywords internal
 cosine_similarity_cpp <- function(X) {

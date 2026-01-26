@@ -38,8 +38,7 @@ arma::imat confusion_matrix_cpp(const arma::ivec& y_true,
 
 //' R1 normalize confusion matrix (C++ version)
 //'
-//' For each pair (i, j), compute:
-//' max(cmat[i,j]/diag[j], cmat[j,i]/diag[i])
+//' Computes the maximum confusion ratio for each cluster pair.
 //'
 //' @param cmat Confusion matrix
 //' @return R1-normalized confusion matrix
@@ -75,8 +74,7 @@ arma::mat normalize_confmat_r1_cpp(const arma::mat& cmat) {
 
 //' R2 normalize confusion matrix (C++ version)
 //'
-//' For each pair (i, j), compute:
-//' (cmat[i,j] + cmat[j,i]) / total
+//' Computes the sum of bidirectional confusions divided by total count.
 //'
 //' @param cmat Confusion matrix
 //' @return R2-normalized confusion matrix

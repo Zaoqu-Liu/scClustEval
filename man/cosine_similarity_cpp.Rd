@@ -10,7 +10,7 @@ cosine_similarity_cpp(X)
 \item{X}{Numeric matrix (rows = samples, cols = features)}
 }
 \value{
-Similarity matrix (values between -1 and 1)
+Similarity matrix with values between -1 and 1
 }
 \description{
 Compute cosine similarity matrix (C++ version)
