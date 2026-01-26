@@ -71,8 +71,12 @@
 <span>  r2_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  r1_step <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  r2_step <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  r1_mode <span class="op">=</span> <span class="st">"1"</span>,</span>
 <span>  use_r1_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  use_r2_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_distance <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dist_cutoff <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  use_projection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  under_cluster_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  min_outer_iter <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -145,12 +149,28 @@
 <dd><p>Step to reduce R2 cutoff each outer iteration (default: 0.001)</p></dd>
 
 
+<dt id="arg-r-mode">r1_mode<a class="anchor" aria-label="anchor" href="#arg-r-mode"></a></dt>
+<dd><p>R1 normalization mode: "1" or "2" (default: "1")</p></dd>
+
+
 <dt id="arg-use-r-only">use_r1_only<a class="anchor" aria-label="anchor" href="#arg-use-r-only"></a></dt>
 <dd><p>Use only R1 for merging</p></dd>
 
 
 <dt id="arg-use-r-only">use_r2_only<a class="anchor" aria-label="anchor" href="#arg-use-r-only"></a></dt>
 <dd><p>Use only R2 for merging</p></dd>
+
+
+<dt id="arg-use-distance">use_distance<a class="anchor" aria-label="anchor" href="#arg-use-distance"></a></dt>
+<dd><p>Use distance matrix in merging decisions (default: FALSE)</p></dd>
+
+
+<dt id="arg-dist-cutoff">dist_cutoff<a class="anchor" aria-label="anchor" href="#arg-dist-cutoff"></a></dt>
+<dd><p>Distance cutoff for merging (default: 8.0)</p></dd>
+
+
+<dt id="arg-use-projection">use_projection<a class="anchor" aria-label="anchor" href="#arg-use-projection"></a></dt>
+<dd><p>Use self-projection labels for subsequent iterations (default: FALSE)</p></dd>
 
 
 <dt id="arg-under-cluster-labels">under_cluster_labels<a class="anchor" aria-label="anchor" href="#arg-under-cluster-labels"></a></dt>

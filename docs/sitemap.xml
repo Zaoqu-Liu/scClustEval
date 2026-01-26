@@ -13,6 +13,7 @@
 <url><loc>https://zaoqu-liu.github.io/scClustEval/news/index.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/AddClusterReliability.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/GetExpressionMatrix.html</loc></url>
+<url><loc>https://zaoqu-liu.github.io/scClustEval/reference/PlotConfusionLinks.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/QuickAssess.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/RunAssessment.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/RunOptimization.html</loc></url>
@@ -75,8 +76,11 @@
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/per_cluster_accuracy_cpp.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot.scClustEval.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_assessment_summary.html</loc></url>
+<url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_cluster_centers.html</loc></url>
+<url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_cluster_links.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_cluster_sankey.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_confusion_heatmap.html</loc></url>
+<url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_embedding_with_links.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_optimization_history.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/plot_roc.html</loc></url>
 <url><loc>https://zaoqu-liu.github.io/scClustEval/reference/print.scClustEval.html</loc></url>
