@@ -505,3 +505,342 @@ plot.scClustEval <- function(x, type = "roc", ...) {
         stop("type must be 'roc', 'confusion', 'accuracy', or 'summary'")
     }
 }
+
+#' @title Plot cluster connections on embedding
+#' @description Draw lines between cluster centroids on embedding space based on 
+#'   confusion matrix values. This visualizes which clusters are frequently confused.
+#'
+#' @param embeddings Matrix of 2D embeddings (cells x 2), e.g., UMAP or t-SNE coordinates
+#' @param labels Cluster labels for each cell
+#' @param confusion_matrix Confusion/connection matrix between clusters (e.g., R1-normalized)
+#' @param threshold Only draw lines for values above this threshold (default: 0)
+#' @param line_color Color for connection lines (default: "#ffa500", orange)
+#' @param line_scale Scale factor for line width (default: 10)
+#' @param show_labels Show cluster labels at centroids (default: TRUE)
+#' @param label_size Size of cluster labels (default: 4)
+#' @param point_color Color for centroid points (default: "white")
+#' @param point_size Size of centroid points (default: 5)
+#' @param point_alpha Transparency of centroid points (default: 0.7)
+#' @param add_to_plot If provided, add to existing ggplot object
+#'
+#' @return A ggplot2 object showing cluster connections
+#'
+#' @details
+#' This function computes the median position (centroid) of each cluster in the
+#' embedding space, then draws lines between centroids where the confusion matrix
+#' value exceeds the threshold. Line width is proportional to the confusion value.
+#'
+#' @examples
+#' \dontrun{
+#' # Get UMAP coordinates from Seurat object
+#' embeddings <- Seurat::Embeddings(seurat_obj, "umap")
+#' labels <- seurat_obj$seurat_clusters
+#'
+#' # Run assessment and get R1 matrix
+#' result <- sc_assessment(X, labels)
+#'
+#' # Plot connections
+#' plot_cluster_links(embeddings, labels, result$r1_normalized, threshold = 0.1)
+#' }
+#'
+#' @export
+plot_cluster_links <- function(embeddings,
+                               labels,
+                               confusion_matrix,
+                               threshold = 0,
+                               line_color = "#ffa500",
+                               line_scale = 10,
+                               show_labels = TRUE,
+                               label_size = 4,
+                               point_color = "white",
+                               point_size = 5,
+                               point_alpha = 0.7,
+                               add_to_plot = NULL) {
+    
+    # Validate inputs
+    if (!is.matrix(embeddings) && !is.data.frame(embeddings)) {
+        stop("embeddings must be a matrix or data.frame with 2 columns")
+    }
+    if (ncol(embeddings) < 2) {
+        stop("embeddings must have at least 2 columns")
+    }
+    if (nrow(embeddings) != length(labels)) {
+        stop("Number of rows in embeddings must match length of labels")
+    }
+    
+    # Use first two columns
+    embeddings <- as.data.frame(embeddings[, 1:2])
+    colnames(embeddings) <- c("Dim1", "Dim2")
+    labels <- as.factor(labels)
+    
+    # Compute centroids (median position for each cluster)
+    centroids <- data.frame(
+        cluster = levels(labels),
+        Dim1 = numeric(nlevels(labels)),
+        Dim2 = numeric(nlevels(labels))
+    )
+    
+    for (i in seq_along(levels(labels))) {
+        cl <- levels(labels)[i]
+        mask <- labels == cl
+        centroids$Dim1[i] <- median(embeddings$Dim1[mask])
+        centroids$Dim2[i] <- median(embeddings$Dim2[mask])
+    }
+    rownames(centroids) <- centroids$cluster
+    
+    # Prepare confusion matrix
+    cmat <- as.matrix(confusion_matrix)
+    
+    # Make symmetric and get upper triangle
+    cmat_sym <- pmax(cmat, t(cmat), na.rm = TRUE)
+    cmat_sym[lower.tri(cmat_sym, diag = TRUE)] <- 0
+    
+    # Find pairs above threshold
+    pairs <- which(cmat_sym > threshold, arr.ind = TRUE)
+    
+    # Create line segments data
+    if (nrow(pairs) > 0) {
+        lines_df <- data.frame(
+            x = numeric(nrow(pairs)),
+            y = numeric(nrow(pairs)),
+            xend = numeric(nrow(pairs)),
+            yend = numeric(nrow(pairs)),
+            weight = numeric(nrow(pairs))
+        )
+        
+        cluster_names <- rownames(cmat)
+        for (k in seq_len(nrow(pairs))) {
+            i <- pairs[k, 1]
+            j <- pairs[k, 2]
+            
+            cl_i <- cluster_names[i]
+            cl_j <- cluster_names[j]
+            
+            if (cl_i %in% centroids$cluster && cl_j %in% centroids$cluster) {
+                lines_df$x[k] <- centroids[cl_i, "Dim1"]
+                lines_df$y[k] <- centroids[cl_i, "Dim2"]
+                lines_df$xend[k] <- centroids[cl_j, "Dim1"]
+                lines_df$yend[k] <- centroids[cl_j, "Dim2"]
+                lines_df$weight[k] <- cmat_sym[i, j]
+            }
+        }
+        
+        # Remove rows with zero weight
+        lines_df <- lines_df[lines_df$weight > 0, ]
+    } else {
+        lines_df <- data.frame(
+            x = numeric(0), y = numeric(0),
+            xend = numeric(0), yend = numeric(0),
+            weight = numeric(0)
+        )
+    }
+    
+    # Create or add to plot
+    if (is.null(add_to_plot)) {
+        p <- ggplot()
+    } else {
+        p <- add_to_plot
+    }
+    
+    # Add connection lines
+    if (nrow(lines_df) > 0) {
+        p <- p + geom_segment(
+            data = lines_df,
+            aes(x = .data$x, y = .data$y,
+                xend = .data$xend, yend = .data$yend),
+            linewidth = lines_df$weight * line_scale,
+            color = line_color,
+            alpha = 0.7
+        )
+    }
+    
+    # Add centroid points
+    p <- p + geom_point(
+        data = centroids,
+        aes(x = .data$Dim1, y = .data$Dim2),
+        color = point_color,
+        size = point_size,
+        alpha = point_alpha
+    )
+    
+    # Add labels
+    if (show_labels) {
+        p <- p + geom_text(
+            data = centroids,
+            aes(x = .data$Dim1, y = .data$Dim2, label = .data$cluster),
+            size = label_size,
+            fontface = "bold"
+        )
+    }
+    
+    # Theme
+    if (is.null(add_to_plot)) {
+        p <- p + theme_minimal() +
+            labs(x = "Dimension 1", y = "Dimension 2") +
+            coord_fixed()
+    }
+    
+    return(p)
+}
+
+#' @title Plot cluster centroids on embedding
+#' @description Mark cluster centroids on an embedding plot
+#'
+#' @param embeddings Matrix of 2D embeddings (cells x 2)
+#' @param labels Cluster labels for each cell
+#' @param point_color Color for centroid markers (default: "white")
+#' @param point_size Size of centroid markers (default: 8)
+#' @param point_alpha Transparency of markers (default: 0.6)
+#' @param add_to_plot If provided, add to existing ggplot object
+#'
+#' @return A ggplot2 object with cluster centroids marked
+#'
+#' @export
+plot_cluster_centers <- function(embeddings,
+                                 labels,
+                                 point_color = "white",
+                                 point_size = 8,
+                                 point_alpha = 0.6,
+                                 add_to_plot = NULL) {
+    
+    # Use first two columns
+    embeddings <- as.data.frame(embeddings[, 1:2])
+    colnames(embeddings) <- c("Dim1", "Dim2")
+    labels <- as.factor(labels)
+    
+    # Compute centroids
+    centroids <- data.frame(
+        cluster = levels(labels),
+        Dim1 = numeric(nlevels(labels)),
+        Dim2 = numeric(nlevels(labels))
+    )
+    
+    for (i in seq_along(levels(labels))) {
+        cl <- levels(labels)[i]
+        mask <- labels == cl
+        centroids$Dim1[i] <- median(embeddings$Dim1[mask])
+        centroids$Dim2[i] <- median(embeddings$Dim2[mask])
+    }
+    
+    # Create or add to plot
+    if (is.null(add_to_plot)) {
+        p <- ggplot()
+    } else {
+        p <- add_to_plot
+    }
+    
+    # Add centroid markers
+    p <- p + geom_point(
+        data = centroids,
+        aes(x = .data$Dim1, y = .data$Dim2),
+        color = point_color,
+        size = point_size,
+        alpha = point_alpha
+    )
+    
+    if (is.null(add_to_plot)) {
+        p <- p + theme_minimal() +
+            labs(x = "Dimension 1", y = "Dimension 2") +
+            coord_fixed()
+    }
+    
+    return(p)
+}
+
+#' @title Plot embedding with cluster links
+#' @description Combined plot showing cells colored by cluster with confusion-based connections
+#'
+#' @param embeddings Matrix of 2D embeddings (cells x 2)
+#' @param labels Cluster labels for each cell
+#' @param confusion_matrix Confusion matrix between clusters
+#' @param threshold Threshold for drawing connection lines (default: 0.1)
+#' @param title Plot title
+#' @param colors Optional color palette for clusters
+#' @param point_size Size of cell points (default: 0.5)
+#' @param line_color Color for connection lines (default: "#ffa500")
+#' @param line_scale Scale factor for line widths (default: 10)
+#' @param show_legend Show cluster legend (default: TRUE)
+#'
+#' @return A ggplot2 object
+#'
+#' @details
+#' This function creates a scatter plot of cells colored by cluster assignment,
+#' with lines connecting cluster centroids based on confusion matrix values.
+#' Useful for visualizing which clusters are transcriptionally similar and
+#' frequently confused by the classifier.
+#'
+#' @examples
+#' \dontrun{
+#' # With Seurat object
+#' embeddings <- Seurat::Embeddings(seurat_obj, "umap")
+#' labels <- seurat_obj$seurat_clusters
+#' result <- sc_assessment(GetAssayData(seurat_obj), labels)
+#'
+#' plot_embedding_with_links(
+#'   embeddings, labels, result$r1_normalized,
+#'   threshold = 0.1, title = "UMAP with Confusion Links"
+#' )
+#' }
+#'
+#' @export
+plot_embedding_with_links <- function(embeddings,
+                                      labels,
+                                      confusion_matrix,
+                                      threshold = 0.1,
+                                      title = NULL,
+                                      colors = NULL,
+                                      point_size = 0.5,
+                                      line_color = "#ffa500",
+                                      line_scale = 10,
+                                      show_legend = TRUE) {
+    
+    # Prepare data
+    embeddings <- as.data.frame(embeddings[, 1:2])
+    colnames(embeddings) <- c("Dim1", "Dim2")
+    labels <- as.factor(labels)
+    
+    # Set colors
+    n_clusters <- nlevels(labels)
+    if (is.null(colors)) {
+        colors <- .get_color_palette(n_clusters)
+    }
+    
+    # Create cell scatter data
+    cell_df <- data.frame(
+        Dim1 = embeddings$Dim1,
+        Dim2 = embeddings$Dim2,
+        Cluster = labels
+    )
+    
+    # Base scatter plot
+    p <- ggplot(cell_df, aes(x = .data$Dim1, y = .data$Dim2, color = .data$Cluster)) +
+        geom_point(size = point_size, alpha = 0.6) +
+        scale_color_manual(values = colors) +
+        theme_minimal() +
+        theme(
+            legend.position = if (show_legend) "right" else "none"
+        ) +
+        labs(x = "Dimension 1", y = "Dimension 2", color = "Cluster")
+    
+    # Add connection lines
+    p <- plot_cluster_links(
+        embeddings = embeddings,
+        labels = labels,
+        confusion_matrix = confusion_matrix,
+        threshold = threshold,
+        line_color = line_color,
+        line_scale = line_scale,
+        show_labels = TRUE,
+        label_size = 3,
+        point_color = "white",
+        point_size = 4,
+        add_to_plot = p
+    )
+    
+    # Add title
+    if (!is.null(title)) {
+        p <- p + ggtitle(title)
+    }
+    
+    return(p)
+}

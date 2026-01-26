@@ -471,3 +471,118 @@ QuickAssess <- function(object, ...) {
     cat(sprintf("Clusters:       %d\n", length(result$classes)))
     invisible(result$accuracy)
 }
+
+#' @title Plot Seurat embedding with cluster confusion links
+#' @description Visualize clustering confusion on Seurat UMAP/t-SNE embedding
+#'
+#' @param object Seurat object
+#' @param result scClustEval assessment result
+#' @param reduction Name of reduction to plot (default: "umap")
+#' @param cluster_col Cluster column to use (default: uses result info or Idents)
+#' @param matrix_type Which confusion matrix to use: "R1" or "R2"
+#' @param threshold Threshold for drawing lines (default: 0.1)
+#' @param line_color Color for connection lines
+#' @param line_scale Scale factor for line widths
+#' @param point_size Size of cell points
+#' @param title Plot title
+#' @param show_legend Show cluster legend
+#'
+#' @return A ggplot2 object
+#'
+#' @details
+#' This function creates a UMAP/t-SNE plot showing cells colored by cluster,
+#' with lines connecting cluster centroids based on confusion matrix values.
+#' This helps identify which clusters are transcriptionally similar.
+#'
+#' @examples
+#' \dontrun{
+#' # Run assessment
+#' result <- RunAssessment(seurat_obj)
+#'
+#' # Plot UMAP with confusion links
+#' PlotConfusionLinks(seurat_obj, result, threshold = 0.1)
+#'
+#' # Use t-SNE instead
+#' PlotConfusionLinks(seurat_obj, result, reduction = "tsne")
+#' }
+#'
+#' @export
+PlotConfusionLinks <- function(object,
+                               result,
+                               reduction = "umap",
+                               cluster_col = NULL,
+                               matrix_type = "R1",
+                               threshold = 0.1,
+                               line_color = "#ffa500",
+                               line_scale = 10,
+                               point_size = 0.5,
+                               title = NULL,
+                               show_legend = TRUE) {
+    
+    # Validate input
+    if (!inherits(object, "Seurat")) {
+        stop("object must be a Seurat object")
+    }
+    
+    if (!inherits(result, "scClustEval")) {
+        stop("result must be an scClustEval object")
+    }
+    
+    # Check reduction exists
+    if (!reduction %in% names(object@reductions)) {
+        stop(sprintf("Reduction '%s' not found. Available: %s",
+                     reduction, paste(names(object@reductions), collapse = ", ")))
+    }
+    
+    # Get embeddings
+    embeddings <- Seurat::Embeddings(object, reduction = reduction)
+    
+    # Get cluster labels
+    if (is.null(cluster_col)) {
+        cluster_col <- result$seurat_cluster_col
+    }
+    
+    if (is.null(cluster_col)) {
+        labels <- Seurat::Idents(object)
+    } else if (cluster_col %in% colnames(object@meta.data)) {
+        labels <- object@meta.data[[cluster_col]]
+    } else {
+        labels <- Seurat::Idents(object)
+    }
+    
+    # Get confusion matrix
+    if (toupper(matrix_type) == "R1") {
+        confusion_matrix <- result$r1_normalized
+    } else {
+        confusion_matrix <- result$r2_normalized
+    }
+    
+    # Set default title
+    if (is.null(title)) {
+        title <- sprintf("%s - Cluster Confusion (R%s > %.2f)",
+                         toupper(reduction),
+                         if (toupper(matrix_type) == "R1") "1" else "2",
+                         threshold)
+    }
+    
+    # Create plot using visualization function
+    p <- plot_embedding_with_links(
+        embeddings = embeddings,
+        labels = labels,
+        confusion_matrix = confusion_matrix,
+        threshold = threshold,
+        title = title,
+        line_color = line_color,
+        line_scale = line_scale,
+        point_size = point_size,
+        show_legend = show_legend
+    )
+    
+    # Update axis labels
+    p <- p + ggplot2::labs(
+        x = paste0(toupper(reduction), "_1"),
+        y = paste0(toupper(reduction), "_2")
+    )
+    
+    return(p)
+}
