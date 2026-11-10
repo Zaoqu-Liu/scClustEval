@@ -3,7 +3,6 @@
 <!-- badges: start -->
 [![R-Universe](https://zaoqu-liu.r-universe.dev/badges/scClustEval)](https://zaoqu-liu.r-universe.dev/scClustEval)
 [![R-CMD-check](https://github.com/Zaoqu-Liu/scClustEval/workflows/R-CMD-check/badge.svg)](https://github.com/Zaoqu-Liu/scClustEval/actions)
-[![CRAN status](https://www.r-pkg.org/badges/version/scClustEval)](https://CRAN.R-project.org/package=scClustEval)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
